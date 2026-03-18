@@ -378,7 +378,7 @@ const validatePhone = (phone) => {
 // Register Applicant
 
 
-api.post('/api/register', upload.any(), async (req, res) => {
+app.post('/api/register', upload.any(), async (req, res) => {
     console.log("=== API REGISTER CALLED ===");
     console.log("REQ.BODY:", req.body);
     console.log("REQ.FILES:", req.files);
