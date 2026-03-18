@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Content | ASMIS Admin</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            background: var(--bg-dark);
+        }
+
+        sidebar {
+            background: linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
+            padding: 2.5rem 1.5rem;
+            border-right: 1px solid rgba(194, 153, 88, 0.2);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        sidebar h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            letter-spacing: 2.5px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(194, 153, 88, 0.3);
+        }
+
+        sidebar ul {
+            list-style: none;
+            flex: 1;
+        }
+
+        sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        sidebar a {
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 3px solid transparent;
+            margin-bottom: 5px;
+            display: block;
+            color: var(--primary);
+            /* Golden by default per request */
+            opacity: 0.8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        sidebar a:hover {
+            background: rgba(194, 153, 88, 0.1);
+            opacity: 1;
+            border-left-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        sidebar a.active {
+            background: linear-gradient(90deg, rgba(194, 153, 88, 0.2) 0%, transparent 100%);
+            opacity: 1;
+            border-left-color: var(--primary);
+            font-weight: 800;
+            box-shadow: inset 5px 0 15px rgba(194, 153, 88, 0.1);
+        }
+
+        .content {
+            padding: 4rem 5%;
+            background: radial-gradient(circle at top right, rgba(194, 153, 88, 0.05), transparent 40%);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        .glass-panel {
+            background: rgba(26, 20, 16, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(194, 153, 88, 0.15);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border-color: rgba(194, 153, 88, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(194, 153, 88, 0.2);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: rgba(194, 153, 88, 0.05);
+            outline: none;
+            box-shadow: 0 0 15px rgba(194, 153, 88, 0.1);
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .section-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .status-msg {
+            margin-top: 1.5rem;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-cta-gold {
+            background: linear-gradient(135deg, #c29958 0%, #8c7335 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(194, 153, 88, 0.2);
+        }
+
+        .hero-cta-gold:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(194, 153, 88, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .hero-cta-gold:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1.5rem 5%;
+            background: rgba(13, 10, 8, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(194, 153, 88, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #8c7335);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(194, 153, 88, 0.3);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: #1a1612;
+            border: 1px solid rgba(194, 153, 88, 0.2);
+            border-radius: 12px;
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-dropdown a {
+            padding: 12px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+
+        .profile-dropdown a:hover {
+            background: rgba(194, 153, 88, 0.1);
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <sidebar>
+            <div style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.5rem; color: var(--primary); font-weight: 800; letter-spacing: 2px;">ASMIS
+                    ADMIN</h3>
+                <div id="adminRoleBadge"
+                    style="display:inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(194,153,88,0.15); color: var(--primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border: 1px solid rgba(194, 153, 88, 0.2);">
+                    ADMIN</div>
+            </div>
+            <ul>
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fa-solid fa-gauge-high"></i> Dashboard
+                    </a>
+                </li>
+                <li id="manageAdminsNav" style="display: none;">
+                    <a href="admins.html">
+                        <i class="fa-solid fa-user-shield"></i> Manage Admins
+                    </a>
+                </li>
+                <li id="vipNav" style="display: none;">
+                    <a href="#" id="registerVipSidebar">
+                        <i class="fa-solid fa-crown"></i> Register VIP/VVIP
+                    </a>
+                </li>
+                <li>
+                    <a href="scan.html">
+                        <i class="fa-solid fa-qrcode"></i> Scan QR
+                    </a>
+                </li>
+                <li>
+                    <a href="content.html" class="active">
+                        <i class="fa-solid fa-pen-to-square"></i> Manage Content
+                    </a>
+                </li>
+
+                <li style="margin-top: 3rem; border-top: 1px solid rgba(194,153,88,0.1); padding-top: 1.5rem;">
+                    <a href="../index.html" style="color: var(--primary); opacity: 0.6; font-size: 0.8rem;">
+                        <i class="fa-solid fa-house"></i> Back to Home
+                    </a>
+                </li>
+                <li style="margin-top: 1rem;">
+                    <a href="#" id="logoutBtn"
+                        style="color: var(--primary); font-weight: bold; border: 1px solid rgba(194, 153, 88, 0.3); background: rgba(194,153,88,0.05); padding: 10px 20px; text-align: center; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </sidebar>
+        <div class="content" style="padding: 0;">
+            <div class="admin-header">
+                <div class="profile-container" id="profileTrigger">
+                    <div style="text-align: right;">
+                        <div id="adminNameDisplay" style="font-size: 0.85rem; font-weight: 700; color: #fff;">Admin User
+                        </div>
+                        <div id="adminRoleDisplay"
+                            style="font-size: 0.65rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">
+                            Admin</div>
+                    </div>
+                    <div class="profile-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="#" id="editProfileBtn"><i class="fa-solid fa-user-gear"></i> Edit Profile</a>
+                        <a href="#" id="dropdownLogoutBtn"
+                            style="border-top: 1px solid rgba(194,153,88,0.1); color: #e74c3c;"><i
+                                class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="content" style="padding: 4rem 10%;">
+                <header style="position: static; padding: 0; background: none; margin-bottom: 4rem;">
+                    <h1 style="font-size: 2.2rem; letter-spacing: -1px;">Visual Storytelling</h1>
+                    <p style="color: #666; font-size: 1rem; margin-top: 0.5rem;">Curate and manage the public-facing
+                        news
+                        and media assets.</p>
+                </header>
+
+                <div class="content-grid">
+                    <!-- News Upload -->
+                    <div class="glass-panel">
+                        <div class="section-header">
+                            <i class="fas fa-newspaper"></i>
+                            <h2 style="color: #fff; font-size: 1.4rem; margin: 0;">Publish News</h2>
+                        </div>
+                        <form id="newsForm">
+                            <div class="form-group">
+                                <label>Article Title</label>
+                                <input type="text" id="newsTitle" class="form-control" placeholder="What's happening?"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>Content Description</label>
+                                <textarea id="newsDescription" class="form-control" rows="4"
+                                    placeholder="Brief overview of the article..." required></textarea>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label>Event Date</label>
+                                    <input type="date" id="newsDate" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cover Image</label>
+                                    <input type="file" id="newsImage" class="form-control" accept="image/*" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>External Link (Optional)</label>
+                                <input type="url" id="newsLink" class="form-control"
+                                    placeholder="https://external-source.com">
+                            </div>
+                            <button type="submit" class="hero-cta-gold"
+                                style="width: 100%; padding: 16px; margin-top: 1rem;">Deploy Article</button>
+                            <div id="newsStatus" class="status-msg status-success">Article published to the main feed!
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Gallery Upload -->
+                    <div class="glass-panel">
+                        <div class="section-header">
+                            <i class="fas fa-camera-retro"></i>
+                            <h2 style="color: #fff; font-size: 1.4rem; margin: 0;">Gallery Asset</h2>
+                        </div>
+                        <form id="galleryForm">
+                            <div class="form-group">
+                                <label>Asset Title</label>
+                                <input type="text" id="galleryTitle" class="form-control"
+                                    placeholder="In-the-moment caption" required>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label>Asset Type</label>
+                                    <select id="galleryType" class="form-control" required>
+                                        <option value="image">Still Image</option>
+                                        <option value="video">Motion Video</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Media File</label>
+                                    <input type="file" id="galleryMedia" class="form-control" accept="image/*,video/*"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Event Name</label>
+                                <input type="text" id="galleryEvent" class="form-control"
+                                    placeholder="e.g. ASMIS 2025 Opening Ceremony" required>
+                            </div>
+                            <button type="submit" class="hero-cta-gold"
+                                style="width: 100%; padding: 16px; margin-top: 1rem;">Add to Gallery</button>
+                            <div id="galleryStatus" class="status-msg status-success">Asset successfully added to the
+                                collection!</div>
+                        </form>
+                    </div>
+
+                    <!-- Sponsor Management -->
+                    <div class="glass-panel" id="sponsorManagementPanel" style="display: none;">
+                        <div class="section-header">
+                            <i class="fas fa-handshake"></i>
+                            <h2 style="color: #fff; font-size: 1.4rem; margin: 0;">Manage Sponsors</h2>
+                        </div>
+                        <form id="sponsorForm">
+                            <div class="form-group">
+                                <label>Sponsor Name</label>
+                                <input type="text" id="sponsorName" class="form-control" placeholder="Company Name"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>Logo URL (External)</label>
+                                <input type="url" id="sponsorLogo" class="form-control"
+                                    placeholder="https://example.com/logo.png" required>
+                                <small style="color: #666; font-size: 0.7rem; display: block; margin-top: 5px;">Use a
+                                    high-quality PNG or SVG link.</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Website URL</label>
+                                <input type="url" id="sponsorWebsite" class="form-control"
+                                    placeholder="https://example.com">
+                            </div>
+                            <button type="submit" class="hero-cta-gold"
+                                style="width: 100%; padding: 16px; margin-top: 1rem;">Add Sponsor</button>
+                            <div id="sponsorStatus" class="status-msg status-success">Sponsor added successfully!</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIP Modal needed for sidebar link functionality -->
+        <div id="vipModal" class="modal-overlay">
+            <div class="glass-panel" style="max-width: 550px; width: 90%; border-top: 5px solid var(--primary);">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2
+                        style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 5px;">
+                        Register VIP</h2>
+                </div>
+                <form id="vipForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label
+                                style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Full
+                                Name</label>
+                            <input type="text" id="vipName" required placeholder="John Doe"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                        </div>
+                        <div class="form-group">
+                            <label
+                                style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Email
+                                Address</label>
+                            <input type="email" id="vipEmail" required placeholder="john@example.com"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                        </div>
+                        <div class="form-group">
+                            <label
+                                style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Role</label>
+                            <select id="vipRole" required
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                                <option value="VIP">VIP</option>
+                                <option value="VVIP">VVIP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label
+                                style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Country</label>
+                            <input type="text" id="vipCountry" required placeholder="Ethiopia"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label
+                            style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Organization/Title</label>
+                        <input type="text" id="vipOrg" placeholder="Minister / CEO / Founder"
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <button type="button" class="btn-reject"
+                            style="flex: 1; padding: 16px; background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.2);"
+                            onclick="closeVipModal()">Cancel</button>
+                        <button type="submit" class="hero-cta-gold"
+                            style="flex: 2; padding: 16px; font-size: 1rem; letter-spacing: 2px;">Register &
+                            Approve</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Profile Modal -->
+        <div id="profileModal" class="modal-overlay">
+            <div class="glass-panel" style="max-width: 500px; width: 90%; border-top: 5px solid var(--primary);">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2
+                        style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 4px;">
+                        Edit Profile</h2>
+                    <p style="color: #666; font-size: 0.85rem;">Update your administrative credentials.</p>
+                </div>
+                <form id="profileForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label
+                                style="display: block; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Full
+                                Name</label>
+                            <input type="text" id="profileFullName" required
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(194,153,88,0.2); color: white; border-radius: 8px; outline: none;">
+                        </div>
+                        <div class="form-group">
+                            <label
+                                style="display: block; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Email</label>
+                            <input type="email" id="profileEmail" required
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(194,153,88,0.2); color: white; border-radius: 8px; outline: none;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label
+                            style="display: block; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Username</label>
+                        <input type="text" id="profileUsername" required
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(194,153,88,0.2); color: white; border-radius: 8px; outline: none;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label
+                            style="display: block; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">New
+                            Password (Optional)</label>
+                        <input type="password" id="profilePassword" placeholder="Leave blank to keep current"
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(194,153,88,0.2); color: white; border-radius: 8px; outline: none;">
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <button type="button" class="btn-reject" style="flex: 1; padding: 15px;"
+                            onclick="closeProfileModal()">Cancel</button>
+                        <button type="submit" class="hero-cta-gold" style="flex: 2; padding: 15px;">Update
+                            Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script src="content.js"></script>
+</body>
+
+</html>

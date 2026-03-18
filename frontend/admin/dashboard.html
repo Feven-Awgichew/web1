@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | ASMIS</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+
+        sidebar {
+            background: #050505;
+            padding: 2rem;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        sidebar ul {
+            list-style: none;
+        }
+
+        sidebar li {
+            margin-bottom: 1rem;
+        }
+
+        sidebar a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        sidebar a.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 3rem 5%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: #666;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: rgba(194, 153, 88, 0.1);
+            color: var(--primary);
+        }
+
+        .status-rejected {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .status-approved {
+            background: rgba(46, 204, 113, 0.12);
+            color: #2ecc71;
+        }
+
+        .btn-reject {
+            background: rgba(255, 255, 255, 0.05);
+            color: #888 !important;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .btn-reject:hover {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c !important;
+            border-color: #e74c3c;
+            transform: translateY(-1px);
+        }
+
+        .btn-reject:active {
+            transform: translateY(1px);
+        }
+
+        /* Top Header & Profile */
+        .admin-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(13, 10, 8, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(194, 153, 88, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .profile-container {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 15px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .profile-container:hover {
+            background: rgba(194, 153, 88, 0.1);
+            border-color: rgba(194, 153, 88, 0.2);
+        }
+
+        .profile-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary), #8c7335);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 900;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: #1a1410;
+            border: 1px solid rgba(194, 153, 88, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            margin-top: 10px;
+            overflow: hidden;
+            z-index: 1001;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .profile-dropdown a:hover {
+            background: rgba(194, 153, 88, 0.1);
+            color: var(--primary);
+        }
+
+        /* Modal Overrides for 3D Feel */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-box {
+            background: #1a1612;
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        /* Badge Specific Styling */
+        .badge-card {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(194, 153, 88, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .badge-header {
+            border-bottom: 1px solid rgba(194, 153, 88, 0.2);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0.5rem 0;
+            text-transform: uppercase;
+        }
+
+        .badge-role {
+            display: inline-block;
+            background: var(--primary);
+            color: #000;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-qr {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .badge-footer {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            height: 400px;
+            width: 100%;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+            perspective: 2000px;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotateX(0);
+            }
+
+            50% {
+                transform: translateY(-15px) rotateX(2deg);
+            }
+        }
+
+        .chart-container:hover {
+            transform: rotateX(8deg) rotateY(-8deg) scale(1.02);
+            animation-play-state: paused;
+        }
+
+        #roleChart {
+            filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.6));
+            transition: all 0.5s ease;
+        }
+
+        .dashboard-header {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2.5rem;
+            margin-bottom: 3.5rem;
+            align-items: stretch;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .summary-stats header {
+            grid-column: span 2;
+        }
+
+        /* Gold Sidebar Overhaul */
+        sidebar {
+            background: linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
+            border-right: 1px solid rgba(194, 153, 88, 0.2);
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        sidebar h3 {
+            color: var(--primary);
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(194, 153, 88, 0.3);
+        }
+
+        sidebar ul li a {
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 3px solid transparent;
+            margin-bottom: 5px;
+            display: block;
+            color: var(--primary);
+            /* Golden by default per request */
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        sidebar ul li a:hover {
+            background: rgba(194, 153, 88, 0.1);
+            opacity: 1;
+            border-left-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        sidebar ul li a.active {
+            background: linear-gradient(90deg, rgba(194, 153, 88, 0.2) 0%, transparent 100%);
+            opacity: 1;
+            border-left-color: var(--primary);
+            font-weight: 800;
+            box-shadow: inset 5px 0 15px rgba(194, 153, 88, 0.1);
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #fff;
+            font-weight: 600;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 400px;
+        }
+
+        .toast-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            background: rgba(46, 204, 113, 0.95);
+            border-left: 4px solid #27ae60;
+        }
+
+        .toast-error {
+            background: rgba(231, 76, 60, 0.95);
+            border-left: 4px solid #c0392b;
+        }
+
+        /* Filter Styles */
+        .admin-filter-select {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--primary);
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c29958' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+            accent-color: var(--primary); /* Forces checkbox/radio/etc to gold */
+        }
+        
+        .admin-filter-select:hover, .admin-filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(194,153,88,0.2);
+        }
+
+        .admin-filter-select option {
+            background: #1a1410;
+            color: #fff;
+        }
+
+        /* Task 2: Change selection color from blue to gold */
+        ::selection {
+            background: rgba(194, 153, 88, 0.3);
+            color: #fff;
+        }
+        
+        /* For Firefox/Chrome support of option selection color when possible */
+        .admin-filter-select option:checked,
+        .admin-filter-select option:hover {
+            box-shadow: 0 0 10px 100px var(--primary) inset !important;
+            color: #000 !important;
+        }
+
+        /* Screen Customization and Responsiveness */
+        @media (max-width: 1024px) {
+            .admin-layout {
+                grid-template-columns: 200px 1fr;
+            }
+            .dashboard-header {
+                grid-template-columns: 1fr 300px;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+            #mobileMenuToggle {
+                display: block !important;
+            }
+            sidebar {
+                position: fixed;
+                left: -300px; /* Hidden initially */
+                top: 0;
+                bottom: 0;
+                width: 260px;
+                z-index: 9999;
+                transition: left 0.3s ease;
+                display: block !important; /* Overriding display:none from generic styling if any */
+            }
+            sidebar.open {
+                left: 0;
+            }
+            .dashboard-header {
+                grid-template-columns: 1fr;
+            }
+            .content > div {
+                padding: 1rem 5% !important; /* Override inline padding */
+            }
+            .glass-panel {
+                padding: 1rem;
+            }
+            /* Stack main stats grid */
+            div[style*="grid-template-columns: 1fr 1.5fr"] {
+                grid-template-columns: 1fr !important;
+            }
+            /* Stack bottom row stats */
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+            .admin-header {
+                justify-content: space-between !important;
+                padding: 1rem;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Add an overlay for sidebar on mobile -->
+        <div id="sidebarOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9998; backdrop-filter: blur(2px);"></div>
+        
+        <sidebar id="mainSidebar">
+            <div style="margin-bottom: 2rem; position: relative;">
+                <h3 style="margin-bottom: 0.5rem;">ASMIS ADMIN</h3>
+                <div id="adminRoleBadge"
+                    style="display:inline-block; padding: 2px 10px; border-radius: 12px; background: rgba(194, 153, 88, 0.2); color: var(--primary); font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">
+                    ADMIN</div>
+                <!-- Close button for sidebar on mobile -->
+                <button id="closeSidebarBtn" style="display:none; position:absolute; right:0; top:0; background:none; border:none; color:#888; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <ul class="admin-menu">
+                <li>
+                    <a href="dashboard.html" class="active">
+                        <i class="fa-solid fa-gauge-high"></i> Dashboard
+                    </a>
+                </li>
+                <li id="manageAdminsNav" style="display: none;">
+                    <a href="admins.html">
+                        <i class="fa-solid fa-user-shield"></i> Manage Admins
+                    </a>
+                </li>
+                <li id="vipNav" style="display: none;">
+                    <a href="#" id="registerVipSidebar">
+                        <i class="fa-solid fa-crown"></i> Register VIP/VVIP
+                    </a>
+                </li>
+                <li>
+                    <a href="scan.html">
+                        <i class="fa-solid fa-qrcode"></i> Scan QR
+                    </a>
+                </li>
+                <li>
+                    <a href="content.html">
+                        <i class="fa-solid fa-file-pen"></i> Manage Content
+                    </a>
+                </li>
+                <li style="margin-top: 1.5rem;">
+                    <a href="../index.html" style="color: var(--primary); opacity: 0.6;">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Home
+                    </a>
+                </li>
+                <li style="margin-top: 1rem;">
+                    <a href="#" id="logoutBtn"
+                        style="color: var(--primary); font-weight: bold; border: 1px solid rgba(194, 153, 88, 0.3); background: rgba(194,153,88,0.05); padding: 10px 20px; text-align: center; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </sidebar>
+        <div class="content" style="padding: 0;">
+            <div class="admin-header">
+                <button id="mobileMenuToggle" style="display:none; background:none; border:none; color:var(--primary); font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-bars"></i></button>
+                <div class="profile-container" id="profileTrigger">
+                    <div style="text-align: right;">
+                        <div id="adminNameDisplay" style="font-size: 0.85rem; font-weight: 700; color: #fff;">Admin User
+                        </div>
+                        <div id="adminRoleDisplay"
+                            style="font-size: 0.65rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">
+                            Superadmin</div>
+                    </div>
+                    <div class="profile-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="#" id="editProfileBtn"><i class="fa-solid fa-user-gear"></i> Edit Profile</a>
+                        <a href="#" id="dropdownLogoutBtn"
+                            style="border-top: 1px solid rgba(194,153,88,0.1); color: #e74c3c;"><i
+                                class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 2rem 3rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 style="color: var(--primary); font-size: 1.6rem; font-weight: 800; letter-spacing: 1px;">
+                        Dashboard Overview</h1>
+                </div>
+
+                <!-- Stats Grid Wrapper -->
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; margin-bottom: 2rem;">
+
+                    <!-- Left Column (Total + Small Stats) -->
+                    <div style="display: grid; grid-template-rows: auto auto; gap: 1.5rem;">
+                        <!-- Total Registrations -->
+                        <div class="glass-panel"
+                            style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; color: #888; font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: 600;">
+                                    <i class="fa-solid fa-user-plus"></i> Total Registrations
+                                </div>
+                                <div style="display: flex; align-items: baseline; gap: 10px;">
+                                    <span id="totalApplicants"
+                                        style="font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1;">0</span>
+                                    <span style="color: #2ecc71; font-size: 0.85rem; font-weight: 700;">+12%</span>
+                                </div>
+                            </div>
+                            <div style="width: 100px; height: 50px;">
+                                <canvas id="totalRegChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Bottom row: New & Approved -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="glass-panel" style="padding: 1.5rem;">
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; color: #888; font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: 600;">
+                                    <i class="fa-solid fa-user-clock"></i> New Applicants
+                                </div>
+                                <div style="display: flex; align-items: baseline; gap: 10px;">
+                                    <span id="newApplicants"
+                                        style="font-size: 1.8rem; font-weight: 900; color: #fff; line-height: 1;">0</span>
+                                    <span style="color: #2ecc71; font-size: 0.8rem; font-weight: 700;">+5%</span>
+                                </div>
+                            </div>
+                            <div class="glass-panel" style="padding: 1.5rem;">
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; color: #888; font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: 600;">
+                                    <i class="fa-regular fa-circle-check"></i> Approved Attendees
+                                </div>
+                                <div style="display: flex; align-items: baseline; gap: 10px;">
+                                    <span id="approvedAttendees"
+                                        style="font-size: 1.8rem; font-weight: 900; color: #fff; line-height: 1;">0</span>
+                                    <span style="color: #2ecc71; font-size: 0.8rem; font-weight: 700;">+9%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column (Weekly Growth Chart) -->
+                    <div class="glass-panel" style="padding: 1.5rem;">
+                        <div style="color: #888; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600;">Weekly
+                            Registration Growth</div>
+                        <div style="height: 150px; width: 100%;">
+                            <canvas id="weeklyGrowthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Applicant List -->
+                <div class="glass-panel" style="padding: 0; overflow: hidden;">
+                    <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <h2 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Pending Applicant
+                            List</h2>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="position: relative; width: 300px;">
+                                <i class="fa-solid fa-search"
+                                    style="position: absolute; left: 12px; top: 12px; color: #666; font-size: 0.8rem;"></i>
+                                <input type="text" id="tableSearch" placeholder="Search"
+                                    style="width: 100%; padding: 8px 12px 8px 32px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 0.85rem; outline: none;">
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <select id="statusFilter" class="admin-filter-select" style="margin-right: 10px;">
+                                    <option value="All">Status: All</option>
+                                    <option value="pending">Status: Pending</option>
+                                    <option value="approved">Status: Approved</option>
+                                    <option value="rejected">Status: Rejected</option>
+                                </select>
+                                <select id="roleFilter" class="admin-filter-select">
+                                    <option value="All">Role filters</option>
+                                    <option value="Speaker">Speaker</option>
+                                    <option value="Attendee">Attendee</option>
+                                    <option value="VIP">VIP</option>
+                                    <option value="Sponsor">Sponsor</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table id="applicantTable" style="margin-top: 0; width: 100%; border-collapse: collapse; min-width: 800px;">
+                            <thead>
+                                <tr style="background: rgba(255,255,255,0.03);">
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Name</th>
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Email</th>
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Organization</th>
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Role</th>
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Applied</th>
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Status</th>
+                                    <th
+                                        style="padding: 1rem 1.5rem; text-transform: uppercase; font-size: 0.75rem; color: #666; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicantList">
+                                <!-- Rows will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="glass-panel" style="max-width: 500px; width: 90%; border-top: 5px solid var(--primary);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2
+                    style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 3px;">
+                    Edit Profile</h2>
+                <div style="height: 2px; width: 40px; background: var(--primary); margin: 0 auto; opacity: 0.5;"></div>
+            </div>
+
+            <form id="profileForm">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">
+                        Full Name</label>
+                    <input type="text" id="profileFullName" required placeholder="Your Name"
+                        style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">
+                        Email Address</label>
+                    <input type="email" id="profileEmail" required placeholder="your.email@asmis.org"
+                        style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">
+                        Username</label>
+                    <input type="text" id="profileUsername" required placeholder="username"
+                        style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label
+                        style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">
+                        New Password (Optional)</label>
+                    <input type="password" id="profilePassword" placeholder="••••••••"
+                        style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                    <div style="margin-top: 10px; padding: 10px; background: rgba(194,153,88,0.05); border: 1px solid rgba(194,153,88,0.1); border-radius: 4px;">
+                        <p style="color: var(--primary); font-size: 0.65rem; margin-bottom: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Password Policy:</p>
+                        <ul style="color: #888; font-size: 0.65rem; padding-left: 15px; margin: 0;">
+                            <li>Minimum 8 characters</li>
+                            <li>Include Upper & Lower case</li>
+                            <li>Include Number & Special Character</li>
+                            <li>Deny reuse of previous passwords</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" class="btn-reject" style="flex: 1; padding: 16px; font-weight: 700;"
+                        onclick="closeProfileModal()">Cancel</button>
+                    <button type="submit" class="hero-cta-gold"
+                        style="flex: 2; padding: 16px; font-size: 1rem; letter-spacing: 2px;">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Remark Modal -->
+    <div id="remarkModal" class="modal-overlay">
+        <div class="glass-panel" style="max-width: 500px; width: 90%; border-left: 5px solid var(--primary);">
+            <h2 id="modalTitle"
+                style="color: var(--primary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 900;">
+                Process Application</h2>
+            <p id="modalSubtitle"
+                style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                Action requires a formal remark or reason.</p>
+
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <textarea id="modalRemark" class="form-control" rows="4" placeholder="Enter formal remark here..."
+                    style="background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #fff; padding: 1rem; border-radius: 4px; outline: none; width: 100%; resize: none;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button id="confirmBtn" class="hero-cta-gold"
+                    style="flex: 1.5; padding: 14px; font-size: 0.9rem; letter-spacing: 2px;">Confirm Action</button>
+                <button onclick="closeModal()"
+                    style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid #444; color: #aaa; border-radius: 4px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applicant Details Modal -->
+    <div id="detailsModal" class="modal-overlay">
+        <div class="glass-panel" style="max-width: 700px; width: 95%; border-top: 5px solid var(--primary); max-height: 90vh; overflow-y: auto; padding: 2.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                <div>
+                    <h2 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 2px;">Applicant details</h2>
+                    <p id="detailsRoleBadge" style="display: inline-block; padding: 2px 10px; border-radius: 12px; background: rgba(194, 153, 88, 0.2); color: var(--primary); font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">SPEAKER</p>
+                </div>
+                <button onclick="closeDetailsModal()" style="background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; transition: color 0.3s;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="detailsContent" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Content will be injected by JS -->
+            </div>
+
+            <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end;">
+                <button class="btn-reject" style="padding: 12px 30px;" onclick="closeDetailsModal()">Close Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badge Modal -->
+    <style>
+        .lanyard-badge {
+            width: 320px;
+            height: 560px;
+            background-color: #1a120b;
+            background-image: linear-gradient(rgba(26, 18, 11, 0.4), rgba(26, 18, 11, 0.6)), url("../assets/tribal_hero_bg.jpg");
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            margin: 0 auto;
+            border: 2px solid #33261a;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .badge-top-border {
+            width: 100%;
+            height: 12px;
+            background: repeating-linear-gradient(90deg,
+                    var(--primary),
+                    var(--primary) 2px,
+                    #000 2px,
+                    #000 4px);
+            border-bottom: 2px solid var(--primary);
+            position: absolute;
+            top: 10px;
+            left: 0;
+            opacity: 0.8;
+        }
+
+        .badge-bottom-border {
+            width: 100%;
+            height: 8px;
+            background: repeating-linear-gradient(90deg,
+                    var(--primary),
+                    var(--primary) 2px,
+                    #000 2px,
+                    #000 4px);
+            border-top: 1px solid var(--primary);
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            opacity: 0.8;
+        }
+
+        .badge-premium-header {
+            margin-top: 55px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .badge-premium-header .badge-asmis {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 2px;
+            line-height: 1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .badge-premium-header .badge-tagline {
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            color: var(--primary);
+            font-weight: 800;
+            margin-top: 5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+            line-height: 1.4;
+        }
+
+        .badge-premium-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .badge-premium-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #fff;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .badge-premium-role-ribbon {
+            width: 100%;
+            background: linear-gradient(90deg, rgba(194, 153, 88, 0) 0%, rgba(194, 153, 88, 1) 20%, rgba(194, 153, 88, 1) 80%, rgba(194, 153, 88, 0) 100%);
+            color: #000;
+            padding: 8px 0;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            font-weight: 900;
+            margin-bottom: auto;
+            text-align: center;
+        }
+
+        .badge-premium-qr-container {
+            background: #fff;
+            padding: 8px;
+            border-radius: 6px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+            margin-top: auto;
+        }
+
+        .badge-premium-qr-container img {
+            width: 130px;
+            height: 130px;
+            display: block;
+        }
+
+        .badge-premium-id {
+            color: var(--primary);
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 45px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+
+    <!-- VIP Modal needed for sidebar link functionality -->
+    <div id="vipModal" class="modal-overlay">
+        <div class="glass-panel" style="max-width: 550px; width: 90%; border-top: 5px solid var(--primary);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2
+                    style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 5px;">
+                    Register VIP</h2>
+            </div>
+            <form id="vipForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label
+                            style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Full
+                            Name</label>
+                        <input type="text" id="vipName" required placeholder="John Doe"
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                    </div>
+                    <div class="form-group">
+                        <label
+                            style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Email
+                            Address</label>
+                        <input type="email" id="vipEmail" required placeholder="john@example.com"
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                    </div>
+                    <div class="form-group">
+                        <label
+                            style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Role</label>
+                        <select id="vipRole" required
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                            <option value="VIP">VIP</option>
+                            <option value="VVIP">VVIP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label
+                            style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Country</label>
+                        <input type="text" id="vipCountry" required placeholder="Ethiopia"
+                            style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label
+                        style="display: block; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Organization/Title</label>
+                    <input type="text" id="vipOrg" placeholder="Minister / CEO / Founder"
+                        style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; outline: none;">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" class="btn-reject"
+                        style="flex: 1; padding: 16px; background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.2);"
+                        onclick="closeVipModal()">Cancel</button>
+                    <button type="submit" class="hero-cta-gold"
+                        style="flex: 2; padding: 16px; font-size: 1rem; letter-spacing: 2px;">Register &
+                        Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="badgeModal" class="modal-overlay">
+        <div class="modal-box"
+            style="max-width: 400px; padding: 2.5rem 1.5rem; background: transparent; border: none; box-shadow: none;">
+            <div class="lanyard-badge" id="printableBadge">
+                <div class="badge-top-border"></div>
+
+                <div class="badge-premium-header">
+                    <img src="../assets/asmis_logo_new.png" alt="ASMIS Logo"
+                        style="width: 140px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">
+                </div>
+
+                <div class="badge-premium-body">
+                    <h2 class="badge-premium-name" id="badgeName">Samrawit Abate</h2>
+                    <div class="badge-premium-role-ribbon" id="badgeRole">Influencer</div>
+
+                    <div class="badge-premium-qr-container">
+                        <img id="badgeQrImg" src="" alt="QR Code">
+                    </div>
+                    <div class="badge-premium-id" id="badgeIdStr">99055076</div>
+                </div>
+
+                <div class="badge-bottom-border"></div>
+            </div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button onclick="printBadge()" class="premium-button"
+                    style="flex: 1; padding: 12px; font-size: 0.9rem;">Print Badge</button>
+                <button onclick="closeBadgeModal()"
+                    style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #fff; border-radius: 5px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastNotification" class="toast-notification">
+        <i id="toastIcon" class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i>
+        <div id="toastMessage">Notification message</div>
+    </div>
+
+    <script>
+        function printBadge() {
+            const printContent = document.getElementById('printableBadge').outerHTML;
+            const originalContent = document.body.innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            window.location.reload(); // Reload to restore event listeners
+        }
+    </script>
+    <script src="dashboard.js?v=2"></script>
+</body>
+
+</html>

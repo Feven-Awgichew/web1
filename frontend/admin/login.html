@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | ASMIS</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            background: radial-gradient(circle at center, #1a1410 0%, #120e0c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.1;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .login-card {
+            position: relative;
+            background: linear-gradient(135deg, rgba(26, 20, 16, 0.95) 0%, rgba(13, 10, 8, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(194, 153, 88, 0.15);
+            border-radius: 24px;
+            padding: 3.5rem 2.5rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            z-index: 1;
+        }
+
+        .logo-area {
+            margin-bottom: 3rem;
+        }
+
+        .logo-area img {
+            width: 140px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(194, 153, 88, 0.2));
+        }
+
+        .logo-area h1 {
+            color: #fff;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            margin: 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .login-form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(194, 153, 88, 0.2);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(194, 153, 88, 0.05);
+            box-shadow: 0 0 20px rgba(194, 153, 88, 0.1);
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+            display: none;
+            text-align: center;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            font-weight: 600;
+        }
+
+        .premium-button {
+            width: 100%;
+            padding: 16px;
+            font-weight: 900;
+            font-size: 1rem;
+            margin-top: 1rem;
+            letter-spacing: 2px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card animate-fade-in">
+            <div class="logo-area">
+                <img src="../assets/asmis_logo_new.png" alt="ASMIS Logo">
+                <h1>ADMIN PORTAL</h1>
+            </div>
+
+            <div id="errorMessage" class="error-message">Invalid username or password</div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="premium-button">SIGN IN</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+
+</html>
