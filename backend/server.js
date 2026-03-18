@@ -14,8 +14,6 @@ import selfsigned from 'selfsigned';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { initDb, query } from './db.js';
-// Required modules
-
 
 dotenv.config();
 
@@ -376,40 +374,22 @@ const validatePhone = (phone) => {
 };
 
 // Register Applicant
-
-
 app.post('/api/register', upload.any(), async (req, res) => {
     console.log("=== API REGISTER CALLED ===");
     console.log("REQ.BODY:", req.body);
     console.log("REQ.FILES:", req.files);
 
-    const {
-        role,
-        full_name,
-        email,
-        country,
-        organization,
-        social_handle,
-        phone,
-        ...otherFields
-    } = req.body;
+    const { role, full_name, email, country, organization, social_handle, phone, ...otherFields } = req.body;
 
-    // Validate required fields
-    if (!full_name || !email || !role) {
-        return res.status(400).json({ error: 'Missing required fields: full_name, email, or role.' });
-    }
-
-    // Phone validation (optional)
+    // Phone validation (if provided)
     if (phone && !validatePhone(phone)) {
-        return res.status(400).json({
-            error: 'Invalid phone number format. Please provide a valid number (7-20 characters, digits, spaces, dashes, parentheses allowed).'
-        });
+        return res.status(400).json({ error: 'Invalid phone number format. Please provide a valid number (7-20 characters, digits, spaces, dashes, parentheses allowed).' });
     }
 
     // Construct metadata from remaining fields
     const metadataObj = { ...otherFields };
 
-    // Include uploaded files in metadata
+    // Append any uploaded files to metadata
     if (req.files && req.files.length > 0) {
         req.files.forEach(file => {
             metadataObj[file.fieldname] = `/uploads/${file.filename}`;
@@ -417,50 +397,21 @@ app.post('/api/register', upload.any(), async (req, res) => {
     }
 
     try {
-        // Insert user into DB
         const result = await query(
-            `INSERT INTO applicants 
-                (role, full_name, email, country, organization, social_handle, phone, metadata) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-             RETURNING *`,
-            [
-                role,
-                full_name,
-                email,
-                country,
-                organization || '',
-                social_handle || '',
-                phone || '',
-                JSON.stringify(metadataObj)
-            ]
+            'INSERT INTO applicants (role, full_name, email, country, organization, social_handle, phone, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [role, full_name, email, country, organization || '', social_handle || '', phone || '', JSON.stringify(metadataObj)]
         );
 
-        const newUser = result.rows[0];
+        // Send Notification Email
+        sendNotificationEmail(result.rows[0]);
 
-        if (!newUser) {
-            return res.status(500).json({ error: 'Registration failed. Please try again.' });
-        }
+        // Send Confirmation to Applicant
+        sendApplicantRegistrationEmail(result.rows[0]);
 
-        // Respond immediately to frontend
-        res.status(201).json({ user: newUser });
-
-        // Send emails asynchronously (won’t block the response)
-        (async () => {
-            try {
-                await sendNotificationEmail(newUser);
-                await sendApplicantRegistrationEmail(newUser);
-            } catch (emailErr) {
-                console.error("Email sending failed:", emailErr);
-            }
-        })();
-
+        res.status(201).json(result.rows[0]);
     } catch (err) {
-        console.error("Registration error:", err);
-        // Handle unique email constraint error (Postgres example)
-        if (err.code === '23505') {
-            return res.status(409).json({ error: 'Email already exists.' });
-        }
-        res.status(500).json({ error: 'Registration failed. Please try again.' });
+        console.error(err);
+        res.status(500).json({ error: 'Registration failed. Email might already exist.' });
     }
 });
 
