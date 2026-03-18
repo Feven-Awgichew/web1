@@ -14,7 +14,7 @@ form.addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch('/api/register', {
+        const response = await fetch('https://web-12h1.onrender.com/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
