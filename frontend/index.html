@@ -105,13 +105,13 @@
             <!-- Right Nav -->
             <div class="nav-group"
                 style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
-                <a href="/index.html" style="color: var(--primary);">HOME</a>
+                <a href="index.html" style="color: var(--primary);">HOME</a>
                 <span style="color: #666;">|</span>
-                <a href="/about.html">ABOUT</a>
+                <a href="about.html">ABOUT</a>
                 <span style="color: #666;">|</span>
-                <a href="/media.html">GALLERY</a>
+                <a href="media.html">GALLERY</a>
                 <span style="color: #666;">|</span>
-                <a href="/news.html">NEWS</a>
+                <a href="news.html">NEWS</a>
                 <span style="color: #666;">|</span>
                 <a href="#events">EVENTS</a>
 
@@ -771,25 +771,6 @@
 
     <div id="map-tooltip"></div>
     <script type="module" src="main.js"></script>
-    <script>
-const sections = ['home','about','media','news','events'];
-
-function showSection(id) {
-    sections.forEach(s => {
-        const el = document.getElementById(s);
-        if(el) el.style.display = s === id ? 'block' : 'none';
-    });
-}
-
-// Listen for hash changes
-window.addEventListener('hashchange', () => {
-    const hash = window.location.hash.replace('#','') || 'home';
-    showSection(hash);
-});
-
-// On page load, show the correct section
-showSection(window.location.hash.replace('#','') || 'home');
-</script>
 </body>
 
 </html>
