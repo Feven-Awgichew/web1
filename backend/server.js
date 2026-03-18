@@ -23,6 +23,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust the proxy (Render/PaaS) to allow Secure cookies over HTTPS proxy
+app.set('trust proxy', 1);
+
 // SSL Certificate Generation for LAN/HTTPS
 const certDir = path.join(__dirname, 'certs');
 if (!fs.existsSync(certDir)) fs.mkdirSync(certDir);
@@ -30,15 +33,11 @@ if (!fs.existsSync(certDir)) fs.mkdirSync(certDir);
 const certFile = path.join(__dirname, 'certs', 'cert.pem');
 const keyFile = path.join(__dirname, 'certs', 'key.pem');
 
-if (!fs.existsSync(certFile) || !fs.existsSync(keyFile)) {
-    console.error("SSL Certificates missing! Please run manual generation.");
-    process.exit(1);
-}
-
-const certificates = {
+// SSL Certificate Handling - Optional for local, handled by proxy in production
+const certificates = (fs.existsSync(certFile) && fs.existsSync(keyFile)) ? {
     cert: fs.readFileSync(certFile),
     key: fs.readFileSync(keyFile)
-};
+} : null;
 
 app.use(cors({
     origin: ['https://192.168.10.49:5173', 'https://localhost:5173', 'http://localhost:5173'],
@@ -1004,23 +1003,8 @@ app.get('/api/public/speakers', async (req, res) => {
 
 // --- SERVER START ---
 
-// Certificates Generation fallback
-if (!fs.existsSync(certFile) || !fs.existsSync(keyFile)) {
-    console.log("Generating self-signed SSL certificates...");
-    try {
-        const attrs = [{ name: 'commonName', value: 'localhost' }];
-        const pems = selfsigned.generate(attrs, { days: 365 });
-        fs.writeFileSync(certFile, pems.cert);
-        fs.writeFileSync(keyFile, pems.private);
-    } catch (e) {
-        console.error("SSL Generation failed. Using HTTP for now.");
-    }
-}
-
-const httpsServer = https.createServer(certificates, app);
-
-httpsServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on https://localhost:${PORT}`);
-    console.log(`For LAN access: https://YOUR_IP:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Open at http://localhost:${PORT} or your deployment URL`);
 });
 
