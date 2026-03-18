@@ -12,13 +12,13 @@ export default defineConfig({
         https: false, // Use HTTP for frontend locally to avoid certificate handshake issues
         proxy: {
             '/api': {
-                target: 'https://localhost:5000', // Proxy still uses HTTPS to the backend
+                target: 'https://web-12h1.onrender.com', // Proxy still uses HTTPS to the backend
                 changeOrigin: true,
                 secure: false, 
                 rewrite: (path) => path 
             },
             '/uploads': {
-                target: 'https://localhost:5000',
+                target: 'https://web-12h1.onrender.com',
                 changeOrigin: true,
                 secure: false,
                 rewrite: (path) => path
