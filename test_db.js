@@ -16,3 +16,4 @@ const testConnection = async () => {
 };
 
 testConnection();
+
