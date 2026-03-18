@@ -48,10 +48,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Multer Storage Configuration
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/');
+        const dir = 'uploads/';
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        cb(null, dir);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -59,9 +60,30 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
+// Initialize Database & Auto-Seed Superadmin
+(async () => {
+    await initDb();
+    
+    // Auto-seed superadmin if table is empty
+    try {
+        const check = await query('SELECT count(*) FROM admins');
+        if (parseInt(check.rows[0].count) === 0) {
+            console.log("🚀 [Database] No admins found. Seeding default superadmin...");
+            const hash = await bcrypt.hash('superadmin123', 10);
+            await query(
+                'INSERT INTO admins (username, password_hash, role, full_name, email) VALUES ($1, $2, $3, $4, $5)',
+                ['superadmin', hash, 'superadmin', 'System Administrator', 'admin@asmis.com']
+            );
+            console.log("✅ [Database] Default superadmin created: superadmin / superadmin123");
+        }
+    } catch (err) {
+        console.error("❌ [Database] Seeding error:", err.message);
+    }
+})();
 
-// Initialize Database
-initDb();
+
+
+// Multer Storage Configuration
 
 // Email Configuration
 const transporter = nodemailer.createTransport({
