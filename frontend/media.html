@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Hub | ASMIS 2026</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <!-- Tribal Divider Top -->
+        <div
+            style="height: 4px; background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 40px, #000 40px, #000 80px); opacity: 0.6;">
+        </div>
+        <div class="header-main"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 4px 40px;">
+            <!-- Logo Left -->
+            <a href="index.html" class="logo-container">
+                <div class="logo-graphic-container">
+                    <img src="./assets/asmis_logo_new.png" alt="ASMIS" class="logo-graphic">
+                </div>
+                <span class="logo-brand-text">ASMIS</span>
+            </a>
+            <div class="nav-group"
+                style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
+                <a href="index.html">HOME</a>
+                <span style="color: #666;">|</span>
+                <a href="about.html">ABOUT</a>
+                <span style="color: #666;">|</span>
+                <a href="media.html" style="color: var(--primary);">GALLERY</a>
+                <span style="color: #666;">|</span>
+                <a href="news.html">NEWS</a>
+                <span style="color: #666;">|</span>
+                <a href="index.html#events">EVENTS</a>
+
+                <a href="register.html" class="premium-button" style="padding: 8px 18px; font-size: 0.75rem;">REGISTER /
+                    LOG IN</a>
+            </div>
+        </div>
+        <div class="header-bottom-border"></div>
+    </header>
+
+    <main style="padding: 120px 10%;">
+        <h1 class="animate-fade-in" style="font-size: 3.5rem; text-align: center; margin-bottom: 1rem;">Media & <span
+                style="color: var(--primary);">Gallery</span></h1>
+        <p class="animate-fade-in" style="text-align: center; color: #888; margin-bottom: 4rem;">Relive the moments and
+            download official summit resources.</p>
+
+        <!-- Tribal Accent Line -->
+        <div
+            style="width: 150px; height: 3px; background: var(--primary); margin: -2rem auto 4rem; position: relative;">
+            <div
+                style="position: absolute; width: 10px; height: 10px; background: var(--primary); transform: rotate(45deg); top: -4px; left: 50%; margin-left: -5px;">
+            </div>
+        </div>
+
+        <!-- Media Kit Section -->
+        <div class="glass-panel animate-fade-in"
+            style="margin-bottom: 5rem; border: 1px solid rgba(194, 153, 88, 0.2); background: rgba(18, 14, 12, 0.6); padding: 40px;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 30px;">
+                <div style="max-width: 600px;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.8rem;">Official Media Kit</h2>
+                    <p style="color: #ccc; margin-bottom: 0;">Download high-resolution logos, branding toolkits, and
+                        press releases for ASMIS 2026 coverage.</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="premium-button" style="padding: 14px 25px;">Download Branding (ZIP)</button>
+                    <button class="premium-button"
+                        style="background: none; border: 1px solid var(--primary); color: var(--primary); padding: 14px 25px;">Press
+                        Kit (PDF)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Section -->
+        <style>
+            .gallery-filter-btn {
+                border-radius: 4px;
+                padding: 10px 25px;
+                cursor: pointer;
+                font-weight: 600;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                font-size: 0.85rem;
+                transition: all 0.25s ease;
+            }
+
+            .gallery-filter-btn.active {
+                background: var(--primary);
+                color: #000;
+                border: 2px solid var(--primary);
+                box-shadow: 0 4px 12px rgba(194, 153, 88, 0.35);
+            }
+
+            .gallery-filter-btn:not(.active) {
+                background: transparent;
+                color: #c29958;
+                border: 2px solid #c29958;
+            }
+
+            .gallery-filter-btn:not(.active):hover {
+                background: rgba(194, 153, 88, 0.15);
+                box-shadow: 0 0 10px rgba(194, 153, 88, 0.25);
+            }
+
+            /* Lightbox Styles */
+            #mediaLightbox {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.95);
+                z-index: 3000;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(5px);
+            }
+
+            .lightbox-content {
+                max-width: 90%;
+                max-height: 85vh;
+                position: relative;
+                border: 2px solid var(--primary);
+                box-shadow: 0 0 30px rgba(194, 153, 88, 0.3);
+                border-radius: 8px;
+                overflow: hidden;
+                background: #000;
+            }
+
+            .lightbox-close {
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                color: var(--primary);
+                font-size: 40px;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+
+            .lightbox-close:hover {
+                transform: scale(1.1);
+            }
+
+            .lightbox-media {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .gallery-card {
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+
+            .gallery-card:hover {
+                transform: translateY(-5px);
+            }
+        </style>
+        <div class="gallery-filters animate-fade-in"
+            style="justify-content: center; margin-bottom: 3rem; display: flex; gap: 20px;">
+            <button class="gallery-filter-btn active" onclick="filterGallery(event, 'all')">All</button>
+            <button class="gallery-filter-btn" onclick="filterGallery(event, 'image')">Photos</button>
+            <button class="gallery-filter-btn" onclick="filterGallery(event, 'video')">Videos</button>
+        </div>
+
+        <div class="animate-fade-in" id="galleryGrid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+            <!-- Dynamic Gallery Items will be loaded here -->
+        </div>
+
+        <!-- Lightbox -->
+        <div id="mediaLightbox">
+            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+            <div class="lightbox-content" id="lightboxContainer">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allGalleryItems = [];
+
+        window.filterGallery = function (e, type) {
+            // Update active button
+            document.querySelectorAll('.gallery-filter-btn').forEach(btn => btn.classList.remove('active'));
+            if (e.target) e.target.classList.add('active');
+
+            const grid = document.getElementById('galleryGrid');
+            const filtered = type === 'all' ? allGalleryItems : allGalleryItems.filter(item => item.type === type);
+            renderGallery(filtered, grid);
+        };
+
+        window.openLightbox = function (url, type) {
+            const lightbox = document.getElementById('mediaLightbox');
+            const container = document.getElementById('lightboxContainer');
+
+            const mediaUrl = `${url}`;
+
+            if (type === 'video') {
+                container.innerHTML = `<video src="${mediaUrl}" class="lightbox-media" controls autoplay></video>`;
+            } else {
+                container.innerHTML = `<img src="${mediaUrl}" class="lightbox-media" alt="Enlarged view">`;
+            }
+
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        };
+
+        window.closeLightbox = function () {
+            const lightbox = document.getElementById('mediaLightbox');
+            const container = document.getElementById('lightboxContainer');
+            lightbox.style.display = 'none';
+            container.innerHTML = ''; // Stop video if playing
+            document.body.style.overflow = 'auto'; // Restore scroll
+        };
+
+        function renderGallery(items, grid) {
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1 / -1;">No media available yet.</p>';
+                return;
+            }
+            grid.innerHTML = items.map(item => `
+                <div class="gallery-card" style="height: 350px;" onclick="openLightbox('${item.media_url}', '${item.type}')">
+                    ${item.type === 'video'
+                    ? `<div style="position: relative; width: 100%; height: 100%;">
+                         <video src="${item.media_url}" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;"></video>
+                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: var(--primary); opacity: 0.8;">▶</div>
+                       </div>`
+                    : `<img src="${item.media_url}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.2) sepia(0.2);">`
+                }
+                    <div class="gallery-overlay" style="padding: 2rem;">
+                        <h4 style="color: var(--primary); margin-bottom: 8px;">${item.title}</h4>
+                        <p style="font-size: 0.85rem; color: #ddd;">${item.event_name}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/gallery');
+                allGalleryItems = await response.json();
+                const grid = document.getElementById('galleryGrid');
+                renderGallery(allGalleryItems, grid);
+            } catch (err) {
+                console.error('Failed to load gallery');
+                document.getElementById('galleryGrid').innerHTML = '<p style="color: red; text-align: center; grid-column: 1 / -1;">Failed to load media.</p>';
+            }
+
+            // Close lightbox on click outside content
+            document.getElementById('mediaLightbox').addEventListener('click', function (e) {
+                if (e.target === this) closeLightbox();
+            });
+        });
+    </script>
+</body>
+
+</html>

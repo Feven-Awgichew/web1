@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Press | ASMIS 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .news-card {
+            background: rgba(18, 14, 12, 0.8);
+            border: 1px solid rgba(194, 153, 88, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-date {
+            color: var(--primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .news-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .news-card p {
+            color: #888;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .read-more span {
+            transition: transform 0.3s ease;
+        }
+
+        .read-more:hover span {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <!-- Tribal Divider Top -->
+        <div
+            style="height: 4px; background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 40px, #000 40px, #000 80px); opacity: 0.6;">
+        </div>
+        <div class="header-main"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 4px 40px;">
+            <!-- Logo Left -->
+            <a href="index.html" class="logo-container">
+                <div class="logo-graphic-container">
+                    <img src="./assets/asmis_logo_new.png" alt="ASMIS" class="logo-graphic">
+                </div>
+                <span class="logo-brand-text">ASMIS</span>
+            </a>
+            <div class="nav-group"
+                style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
+                <a href="index.html">HOME</a>
+                <span style="color: #666;">|</span>
+                <a href="about.html">ABOUT</a>
+                <span style="color: #666;">|</span>
+                <a href="media.html">GALLERY</a>
+                <span style="color: #666;">|</span>
+                <a href="news.html" style="color: var(--primary);">NEWS</a>
+                <span style="color: #666;">|</span>
+                <a href="index.html#events">EVENTS</a>
+
+                <a href="register.html" class="premium-button" style="padding: 8px 18px; font-size: 0.75rem;">REGISTER /
+                    LOG IN</a>
+            </div>
+        </div>
+        <div class="header-bottom-border"></div>
+    </header>
+
+    <main style="padding: 120px 10%;">
+        <h1 class="animate-fade-in" style="font-size: 3.5rem; text-align: center; margin-bottom: 1rem;">Summit <span
+                style="color: var(--primary);">News</span></h1>
+        <p class="animate-fade-in" style="text-align: center; color: #888; margin-bottom: 4rem;">Latest
+            announcements,
+            press releases, and stories from the ASMIS community.</p>
+
+        <!-- Tribal Accent Line -->
+        <div
+            style="width: 150px; height: 3px; background: var(--primary); margin: -2rem auto 4rem; position: relative;">
+            <div
+                style="position: absolute; width: 10px; height: 10px; background: var(--primary); transform: rotate(45deg); top: -4px; left: 50%; margin-left: -5px;">
+            </div>
+        </div>
+
+        <div class="news-grid animate-fade-in" id="newsGrid">
+            <!-- Dynamic News Items will be loaded here -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/news');
+                const news = await response.json();
+
+                const grid = document.getElementById('newsGrid');
+
+                if (news.length === 0) {
+                    grid.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1 / -1;">No news articles available yet.</p>';
+                    return;
+                }
+
+                grid.innerHTML = news.map(item => `
+                    <article class="news-card">
+                        ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="width: 100%; height: 200px; border-radius: 8px 8px 0 0; object-fit: cover;"/>` : '<div class="news-img" style="height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: #1a1410;">🚀</div>'}
+                        <div class="news-content">
+                            <span class="news-date">${new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })}</span>
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                            ${item.link ? `<a href="${item.link}" target="_blank" class="read-more">Read Full Story <span>→</span></a>` : ''}
+                        </div>
+                    </article>
+                `).join('');
+            } catch (err) {
+                console.error('Failed to load news');
+                document.getElementById('newsGrid').innerHTML = '<p style="color: red; text-align: center; grid-column: 1 / -1;">Failed to load news.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About ASMIS | African Social Media Influencers Summit</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        .about-hero {
+            padding: 120px 10% 80px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(18, 14, 12, 0.95), rgba(13, 10, 8, 0.95));
+            border-bottom: 1px solid rgba(194, 153, 88, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(194, 153, 88, 0.05) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .about-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-hero h1 {
+            font-size: 4rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .about-hero h1 span {
+            color: var(--primary);
+        }
+
+        .about-hero p {
+            color: #aaa;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .section-padding {
+            padding: 80px 10%;
+        }
+
+        .mission-vision-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .mv-card {
+            background: linear-gradient(145deg, rgba(30, 25, 22, 0.8), rgba(20, 15, 12, 0.8));
+            border: 1px solid rgba(194, 153, 88, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mv-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #dfa943, #c29958);
+        }
+
+        .mv-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(194, 153, 88, 0.2);
+            border-color: var(--primary);
+        }
+
+        .mv-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            background: linear-gradient(135deg, #dfa943, #c29958);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mv-card h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mv-card p {
+            color: #ccc;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .why-attend-section {
+            background: linear-gradient(180deg, #0d0a08, #120e0c);
+            border-top: 1px solid rgba(194, 153, 88, 0.1);
+            border-bottom: 1px solid rgba(194, 153, 88, 0.1);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #fff;
+        }
+
+        .section-title span {
+            color: var(--primary);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: #111;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            /* 3D Gold Styling */
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .benefit-card:hover {
+            border-color: #c29958;
+            background: linear-gradient(145deg, #1a1510, #111);
+            box-shadow: inset 0 0 0 1px rgba(194, 153, 88, 0.5), 0 10px 20px rgba(0, 0, 0, 0.6);
+            transform: translateZ(10px) translateY(-5px);
+        }
+
+        .benefit-icon-container {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #bd9f60, #8c7335);
+            border: 1px solid #8c7335;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover .benefit-icon-container {
+            transform: scale(1.1);
+        }
+
+        .benefit-card h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .benefit-card p {
+            color: #999;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-top-border"></div>
+        <div class="header-main"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 4px 40px;">
+
+            <!-- Logo Left -->
+            <a href="index.html" class="logo-container">
+                <div class="logo-graphic-container">
+                    <img src="./assets/asmis_logo_new.png" alt="ASMIS" class="logo-graphic">
+                </div>
+                <span class="logo-brand-text">ASMIS</span>
+            </a>
+
+            <!-- Right Nav -->
+            <div class="nav-group"
+                style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
+                <a href="index.html">HOME</a>
+                <span style="color: #666;">|</span>
+                <a href="about.html" style="color: var(--primary);">ABOUT</a>
+                <span style="color: #666;">|</span>
+                <a href="media.html">GALLERY</a>
+                <span style="color: #666;">|</span>
+                <a href="news.html">NEWS</a>
+                <span style="color: #666;">|</span>
+                <a href="index.html#events">EVENTS</a>
+
+                <a href="register.html"
+                    style="padding: 8px 18px; font-size: 0.75rem; border-radius: 5px; background: linear-gradient(135deg, var(--primary), #8a6b3a); color: #120e0c; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 3px 0 #7a5c2e, 0 4px 8px rgba(0,0,0,0.3); transition: all 0.15s; margin-left: 10px;">REGISTER
+                    / LOG IN</a>
+            </div>
+        </div>
+        <div class="header-bottom-border"></div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="about-content">
+                <h1>About <span>ASMIS</span></h1>
+                <p>The African Social Media Influencers Summit (ASMIS) is the premier continental gathering celebrating
+                    digital creativity, fostering collaboration, and empowering voices that shape the narrative of a
+                    modern, vibrant Africa.</p>
+            </div>
+        </section>
+
+        <!-- Mission & Vision -->
+        <section class="section-padding">
+            <div class="mission-vision-grid" style="max-width: 1200px; margin: 0 auto;">
+                <div class="mv-card">
+                    <div class="mv-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="6"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                        </svg>
+                    </div>
+                    <h2>Our Mission</h2>
+                    <p>To unite Africa's most impactful content creators, digital strategists, and industry leaders. We
+                        aim to provide a collaborative platform that cultivates talent, shares best practices, and
+                        leverages the power of social media to drive positive socio-economic change across the
+                        continent.</p>
+                </div>
+
+                <div class="mv-card">
+                    <div class="mv-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12A10 10 0 0 0 15 21.54A10 10 0 0 1 15 2.46A10 10 0 0 0 2 12Z"></path>
+                        </svg>
+                    </div>
+                    <h2>Our Vision</h2>
+                    <p>We envision a globally connected Africa where native digital voices lead the global conversation.
+                        ASMIS strives to be the catalyst that transforms individual influence into collective power,
+                        reshaping global perceptions and opening new economic frontiers for African creators.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Attend -->
+        <section class="section-padding why-attend-section">
+            <h2 class="section-title">Why <span>Attend?</span></h2>
+
+            <div class="benefits-grid" style="max-width: 1200px; margin: 0 auto;">
+                <!-- Benefit 1 -->
+                <div class="benefit-card">
+                    <div class="benefit-icon-container">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3>Network & Connect</h3>
+                    <p>Build lasting relationships with top-tier influencers, forward-thinking brands, and industry
+                        executives from all 54 African nations.</p>
+                </div>
+
+                <!-- Benefit 2 -->
+                <div class="benefit-card">
+                    <div class="benefit-icon-container">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg>
+                    </div>
+                    <h3>Skill Elevation</h3>
+                    <p>Participate in masterclasses led by global tech partners (TikTok, Meta, X) focusing on
+                        algorithmic growth and monetization strategies.</p>
+                </div>
+
+                <!-- Benefit 3 -->
+                <div class="benefit-card">
+                    <div class="benefit-icon-container">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <h3>Thought Leadership</h3>
+                    <p>Engage in critical panel discussions covering digital rights, authentic storytelling, and the
+                        future of the African creator economy.</p>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <!-- Contact Section (Footer) -->
+
+
+
+        <style>
+            .social-icon-link {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                background: #000;
+                border: 2px solid #c29958;
+                color: #c29958;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .social-icon-link:hover {
+                background: #c29958;
+                color: #000;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(194, 153, 88, 0.3);
+            }
+        </style>
+        <section id="contact"
+            style="padding: 80px 10%; background: linear-gradient(180deg, #120e0c, #0d0a08); border-top: 1px solid rgba(194,153,88,0.15);">
+            <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">Get In <span
+                    style="color: var(--primary);">Touch</span></h2>
+            <p style="text-align: center; color: #777; font-size: 0.95rem; margin-bottom: 4rem;">Have questions about
+                ASMIS 2026? We'd love to hear from you.</p>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; max-width: 1000px; margin: 0 auto;">
+                <!-- Address -->
+                <div style="text-align: center;">
+                    <div
+                        style="width: 45px; height: 45px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg, #bd9f60, #8c7335); border: 1px solid #8c7335; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #000;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px;">
+                        Our Location</h3>
+                    <p style="color: #999; font-size: 0.9rem; line-height: 1.6;">African Union Headquarters<br>Addis
+                        Ababa, Ethiopia</p>
+                </div>
+
+                <!-- Email -->
+                <div style="text-align: center;">
+                    <div
+                        style="width: 45px; height: 45px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg, #bd9f60, #8c7335); border: 1px solid #8c7335; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #000;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px;">
+                        Email Us</h3>
+                    <p style="color: #999; font-size: 0.9rem; line-height: 1.6;"><a href="mailto:info@asmis2026.com"
+                            style="color: #ccc; text-decoration: none;">info@asmis2026.com</a><br><a
+                            href="mailto:support@asmis2026.com"
+                            style="color: #ccc; text-decoration: none;">support@asmis2026.com</a></p>
+                </div>
+
+                <!-- Phone -->
+                <div style="text-align: center;">
+                    <div
+                        style="width: 45px; height: 45px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg, #bd9f60, #8c7335); border: 1px solid #8c7335; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #000;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px;">
+                        Call Us</h3>
+                    <p style="color: #999; font-size: 0.9rem; line-height: 1.6;">+251 11 123 4567<br>+251 91 234 5678
+                    </p>
+                </div>
+            </div>
+
+            <!-- Social Media Links -->
+            <div style="text-align: center; margin-top: 4rem;">
+                <h3
+                    style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 1.5rem;">
+                    Follow Us</h3>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                            </path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+                            </path>
+                            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+
+
+    </main>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

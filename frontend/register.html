@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | ASMIS 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        .register-page {
+            min-height: 100vh;
+            padding: 120px 8% 60px;
+            background: linear-gradient(180deg, #0d0a08 0%, #1a1410 30%, #120e0c 60%, #0a0806 100%);
+            position: relative;
+        }
+
+        /* African border top decoration */
+        .register-page::before {
+            content: '';
+            position: absolute;
+            top: 90px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent 0px,
+                    transparent 10px,
+                    rgba(194, 153, 88, 0.3) 10px,
+                    rgba(194, 153, 88, 0.3) 12px,
+                    transparent 12px,
+                    transparent 20px,
+                    rgba(194, 153, 88, 0.15) 20px,
+                    rgba(194, 153, 88, 0.15) 25px,
+                    transparent 25px,
+                    transparent 30px);
+            opacity: 0.6;
+        }
+
+        .register-page h1 {
+            text-align: center;
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-page h1 span {
+            color: var(--primary);
+        }
+
+        .register-page .subtitle {
+            text-align: center;
+            color: #777;
+            font-size: 1rem;
+            margin-bottom: 4rem;
+        }
+
+        /* African-inspired decorative circles */
+        .african-deco {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .african-deco span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.4;
+        }
+
+        .african-deco span:nth-child(2) {
+            width: 12px;
+            height: 12px;
+            opacity: 0.6;
+        }
+
+        .african-deco span:nth-child(3) {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+            border: 2px solid var(--primary);
+            background: transparent;
+        }
+
+        .african-deco span:nth-child(4) {
+            width: 12px;
+            height: 12px;
+            opacity: 0.6;
+        }
+
+        .african-deco span:nth-child(5) {
+            width: 8px;
+            height: 8px;
+            opacity: 0.4;
+        }
+
+        /* Roles Grid - now 5 cards */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+        }
+
+        .roles-grid-bottom {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 650px;
+            margin: 0 auto 50px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid rgba(194, 153, 88, 0.2);
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .checkbox-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 1rem;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .checkbox-group:hover {
+            background: rgba(194, 153, 88, 0.1);
+            border-color: rgba(194, 153, 88, 0.3);
+        }
+
+        .checkbox-group input {
+            width: auto !important; 
+            height: auto !important;
+            accent-color: var(--primary);
+            margin: 0; 
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            text-transform: none;
+            color: #ddd;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline;
+            line-height: 1.2;
+            max-width: none;
+        }
+
+        .form-group input[type="file"] {
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button {
+            background: var(--primary);
+            color: #120e0c;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button:hover {
+            opacity: 0.9;
+        }
+
+        .role-card {
+            background:
+                /* Subtle kente-like corner pattern */
+                linear-gradient(135deg, rgba(194, 153, 88, 0.06) 0%, transparent 30%),
+                linear-gradient(225deg, rgba(194, 153, 88, 0.04) 0%, transparent 30%),
+                rgba(18, 14, 12, 0.8);
+            border: 2px solid rgba(194, 153, 88, 0.12);
+            border-radius: 16px;
+            padding: 35px 25px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(90deg,
+                    var(--primary) 0px,
+                    var(--primary) 8px,
+                    transparent 8px,
+                    transparent 12px,
+                    #8a6b3a 12px,
+                    #8a6b3a 16px,
+                    transparent 16px,
+                    transparent 20px);
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+
+        .role-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow:
+                0 20px 60px rgba(194, 153, 88, 0.15),
+                0 0 30px rgba(194, 153, 88, 0.05),
+                inset 0 0 30px rgba(194, 153, 88, 0.02);
+        }
+
+        .role-card:hover::after {
+            opacity: 1;
+        }
+
+        /* African-inspired corner triangles */
+        .role-card .corner-tl,
+        .role-card .corner-br {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+        }
+
+        .role-card .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 3px solid var(--primary);
+            border-left: 3px solid var(--primary);
+            opacity: 0.2;
+            transition: opacity 0.3s;
+        }
+
+        .role-card .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 3px solid var(--primary);
+            border-right: 3px solid var(--primary);
+            opacity: 0.2;
+            transition: opacity 0.3s;
+        }
+
+        .role-card:hover .corner-tl,
+        .role-card:hover .corner-br {
+            opacity: 0.8;
+        }
+
+        .role-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            background: radial-gradient(circle, rgba(194, 153, 88, 0.12), rgba(194, 153, 88, 0.03));
+            border: 2px solid rgba(194, 153, 88, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s;
+            /* African double-ring effect */
+            box-shadow: 0 0 0 4px rgba(194, 153, 88, 0.05), 0 0 0 8px rgba(194, 153, 88, 0.02);
+        }
+
+        .role-card:hover .role-icon {
+            background: radial-gradient(circle, rgba(194, 153, 88, 0.2), rgba(194, 153, 88, 0.05));
+            border-color: var(--primary);
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(194, 153, 88, 0.1), 0 0 0 8px rgba(194, 153, 88, 0.05);
+        }
+
+        .role-card h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+        }
+
+        .role-card p {
+            color: #777;
+            font-size: 0.8rem;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.5;
+        }
+
+        /* 3D Register Now Button */
+        .role-card .register-btn {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(180deg, #d4a95a 0%, #c29958 40%, #a07840 100%);
+            color: #120e0c;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            /* 3D effect */
+            box-shadow:
+                0 4px 0 #7a5c2e,
+                0 6px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(0);
+            transition: all 0.15s ease;
+        }
+
+        .role-card .register-btn:hover {
+            background: linear-gradient(180deg, #e0b868 0%, #d4a95a 40%, #b08a48 100%);
+            box-shadow:
+                0 6px 0 #7a5c2e,
+                0 8px 12px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .role-card .register-btn:active {
+            box-shadow:
+                0 1px 0 #7a5c2e,
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(3px);
+        }
+
+        /* African tribal divider */
+        .tribal-divider {
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            height: 12px;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent 0px,
+                    transparent 6px,
+                    rgba(194, 153, 88, 0.15) 6px,
+                    rgba(194, 153, 88, 0.15) 8px,
+                    transparent 8px,
+                    transparent 14px,
+                    rgba(194, 153, 88, 0.25) 14px,
+                    rgba(194, 153, 88, 0.25) 20px,
+                    transparent 20px,
+                    transparent 26px);
+        }
+
+        /* Bottom action bar - 3D tags */
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .action-tag {
+            padding: 14px 30px;
+            background: linear-gradient(180deg, #2a231c 0%, #1a1410 100%);
+            border: 1px solid rgba(194, 153, 88, 0.25);
+            border-radius: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: default;
+            /* 3D effect */
+            box-shadow:
+                0 3px 0 #0a0806,
+                0 5px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(194, 153, 88, 0.1);
+            transition: all 0.2s;
+        }
+
+        .action-tag:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 5px 0 #0a0806,
+                0 7px 12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(194, 153, 88, 0.15);
+            border-color: var(--primary);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background:
+                repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(194, 153, 88, 0.01) 30px, rgba(194, 153, 88, 0.01) 32px),
+                linear-gradient(180deg, #1e1914, #1a1612);
+            border: 1px solid rgba(194, 153, 88, 0.25);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* African bottom border */
+            border-bottom: 4px solid var(--primary);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-content h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .modal-content .modal-subtitle {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(194, 153, 88, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(194, 153, 88, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #555;
+        }
+
+        .form-group select option {
+            background: #1a1612;
+            color: #fff;
+        }
+
+        /* 3D Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(180deg, #d4a95a 0%, #c29958 40%, #a07840 100%);
+            color: #120e0c;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+            box-shadow:
+                0 4px 0 #7a5c2e,
+                0 6px 10px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: all 0.15s ease;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(180deg, #e0b868 0%, #d4a95a 40%, #b08a48 100%);
+            box-shadow:
+                0 6px 0 #7a5c2e,
+                0 8px 14px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            box-shadow:
+                0 1px 0 #7a5c2e,
+                0 2px 4px rgba(0, 0, 0, 0.3);
+            transform: translateY(3px);
+        }
+
+        #formMessage {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .roles-grid-bottom {
+                grid-template-columns: 1fr;
+            }
+
+            .register-page h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <!-- Tribal Divider Top -->
+        <div
+            style="height: 4px; background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 40px, #000 40px, #000 80px); opacity: 0.6;">
+        </div>
+        <div class="header-main"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 4px 40px;">
+
+            <!-- Logo Left -->
+            <a href="index.html" class="logo-container">
+                <div class="logo-graphic-container">
+                    <img src="./assets/asmis_logo_new.png" alt="ASMIS" class="logo-graphic">
+                </div>
+                <span class="logo-brand-text">ASMIS</span>
+            </a>
+
+            <!-- Right Nav -->
+            <div class="nav-group"
+                style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
+                <a href="index.html">HOME</a>
+                <span style="color: #666;">|</span>
+                <a href="about.html">ABOUT</a>
+                <span style="color: #666;">|</span>
+                <a href="media.html">GALLERY</a>
+                <span style="color: #666;">|</span>
+                <a href="news.html">NEWS</a>
+                <span style="color: #666;">|</span>
+                <a href="index.html#events">EVENTS</a>
+
+                <a href="register.html"
+                    style="padding: 8px 18px; font-size: 0.75rem; border-radius: 5px; background: linear-gradient(135deg, var(--primary), #8a6b3a); color: #120e0c; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 3px 0 #7a5c2e, 0 4px 8px rgba(0,0,0,0.3); transition: all 0.15s; margin-left: 10px;">REGISTER
+                    / LOG IN</a>
+            </div>
+        </div>
+        <div class="header-bottom-border"></div>
+    </header>
+
+    <div class="register-page">
+        <h1>Choose Your <span>Role</span></h1>
+        <p class="subtitle">Select your registration category to join ASMIS 2026</p>
+
+        <!-- African decorative dots -->
+        <div class="african-deco">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <!-- Top row: 3 cards -->
+        <div class="roles-grid">
+            <!-- Influencer Card -->
+            <div class="role-card" onclick="openModal('Influencer')">
+                <div class="corner-tl"></div>
+                <div class="corner-br"></div>
+                <div class="role-icon">🎤</div>
+                <h2>Influencer</h2>
+                <p>Content creators, digital leaders &amp; social media influencers across Africa</p>
+                <button class="register-btn">Register Now</button>
+            </div>
+
+            <!-- Partner Card -->
+            <div class="role-card" onclick="openModal('Partner')">
+                <div class="corner-tl"></div>
+                <div class="corner-br"></div>
+                <div class="role-icon">🤝</div>
+                <h2>Partner</h2>
+                <p>Organizations &amp; brands partnering for Africa's digital future</p>
+                <button class="register-btn">Register Now</button>
+            </div>
+
+            <!-- Sponsor Card -->
+            <div class="role-card" onclick="openModal('Sponsor')">
+                <div class="corner-tl"></div>
+                <div class="corner-br"></div>
+                <div class="role-icon">💎</div>
+                <h2>Sponsor</h2>
+                <p>Corporate sponsors and brand partners funding ASMIS 2026</p>
+                <button class="register-btn">Register Now</button>
+            </div>
+        </div>
+
+        <!-- Bottom row: 2 cards centered -->
+        <div class="roles-grid-bottom">
+            <!-- Speaker Card -->
+            <div class="role-card" onclick="openModal('Speaker')">
+                <div class="corner-tl"></div>
+                <div class="corner-br"></div>
+                <div class="role-icon">🎙️</div>
+                <h2>Speaker</h2>
+                <p>Thought leaders, panelists &amp; keynote speakers shaping Africa's narrative</p>
+                <button class="register-btn">Register Now</button>
+            </div>
+
+            <!-- Public Applicant Card -->
+            <div class="role-card" onclick="openModal('Public Applicant')">
+                <div class="corner-tl"></div>
+                <div class="corner-br"></div>
+                <div class="role-icon">🌍</div>
+                <h2>Public Applicant</h2>
+                <p>Enthusiasts, students &amp; visitors attending ASMIS 2026</p>
+                <button class="register-btn">Register Now</button>
+            </div>
+        </div>
+
+        <div class="tribal-divider"></div>
+
+        <div class="action-bar">
+            <div class="action-tag">🎯 Register Now</div>
+            <div class="action-tag">🤝 Exhibit Now</div>
+            <div class="action-tag">📚 Workshop</div>
+            <a href="#schedule" class="action-tag" style="text-decoration: none;">📅
+                View Agenda</a>
+        </div>
+    </div>
+
+
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="registrationModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle">Registration</h2>
+            <p class="modal-subtitle" id="modalSubtitle">Fill in your details to complete registration</p>
+
+            <form id="registerForm">
+                <input type="hidden" id="selectedRole" name="role">
+                <div id="dynamicFields"></div>
+            </form>
+            <div id="formMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(role) {
+            const modal = document.getElementById('registrationModal');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const roleInput = document.getElementById('selectedRole');
+            const dynamicFields = document.getElementById('dynamicFields');
+
+            roleInput.value = role;
+            title.textContent = role + ' Registration';
+
+            const subtitles = {
+                'Influencer': 'Join as a content creator and digital leader',
+                'Partner': "Partner with ASMIS to shape Africa's digital future",
+                'Sponsor': 'Become a key sponsor of ASMIS 2026',
+                'Speaker': 'Apply to speak at ASMIS 2026',
+                'Public Applicant': 'Register to attend ASMIS 2026'
+            };
+            subtitle.textContent = subtitles[role] || 'Complete your registration details';
+
+            let html = '';
+            const sharedStyles = `
+                <style>
+                    .options-grid { 
+                        display: flex; 
+                        flex-direction: column; 
+                        gap: 8px; 
+                        margin-top: 8px; 
+                        padding-bottom: 6px; 
+                    }
+                    .option-label { display: flex; align-items: flex-start; gap: 8px; font-weight: normal; font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s; margin-bottom: 0 !important; line-height: 1.4; }
+                    .option-label:hover { background: rgba(194,153,88,0.1); border-color: rgba(194,153,88,0.3); }
+                    .option-label input { margin: 0; margin-top: 3px; width: auto; height: auto; flex-shrink: 0; accent-color: var(--primary); }
+                </style>
+            `;
+
+            if (role === 'Influencer') {
+                html += sharedStyles + `
+                    <h3 class="section-title">Personal Information</h3>
+                    <div class="form-group"><label>Full Name</label><input type="text" name="full_name" required></div>
+                    <div class="form-group"><label>Date of Birth</label><input type="date" name="meta_dob"></div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="radio" name="meta_gender" value="Male" required> Male</label>
+                            <label class="option-label"><input type="radio" name="meta_gender" value="Female"> Female</label>
+                            <label class="option-label"><input type="radio" name="meta_gender" value="Prefer not to say"> Prefer not to say</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Nationality</label><input type="text" name="meta_nationality"></div>
+                    <div class="form-group"><label>Country of Residence</label><input type="text" name="country" required></div>
+                    <div class="form-group"><label>City</label><input type="text" name="meta_city"></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" name="email" required></div>
+                    <div class="form-group"><label>Phone Number (WhatsApp Preferred)</label><input type="tel" name="phone" required></div>
+                    <div class="form-group"><label>Passport Number / National ID</label><input type="text" name="meta_id_number"></div>
+                    <div class="form-group"><label>Upload ID Document (Optional)</label><input type="file" name="id_document" accept="image/*,.pdf"></div>
+
+                    <h3 class="section-title">Social Media Profile Information</h3>
+                    <div class="form-group">
+                        <label>Primary Platform</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="Instagram" required> Instagram</label>
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="YouTube"> YouTube</label>
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="TikTok"> TikTok</label>
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="Facebook"> Facebook</label>
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="Twitter/X"> Twitter/X</label>
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="LinkedIn"> LinkedIn</label>
+                            <label class="option-label"><input type="radio" name="meta_primary_platform" value="Other"> Other</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Primary Account Handle</label><input type="text" name="social_handle" required></div>
+                    <div class="form-group"><label>Profile Link</label><input type="url" name="meta_profile_link"></div>
+                    <div class="form-group"><label>Total Followers/Subscribers</label><input type="text" name="meta_followers"></div>
+                    <div class="form-group"><label>Average Engagement Rate (%)</label><input type="text" name="meta_engagement_rate"></div>
+                    <div class="form-group"><label>Secondary Platforms</label><input type="text" name="meta_secondary_platforms"></div>
+
+                    <h3 class="section-title">Content Category</h3>
+                    <div class="form-group">
+                        <label>Primary Content Category</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Lifestyle" required> Lifestyle</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Technology"> Technology</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Education"> Education</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Business & Entrepreneurship"> Business & Entrepreneurship</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Travel & Tourism"> Travel & Tourism</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Culture & Heritage"> Culture & Heritage</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Fashion & Beauty"> Fashion & Beauty</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Entertainment"> Entertainment</label>
+                            <label class="option-label"><input type="checkbox" name="meta_content_category" value="Social Impact"> Social Impact</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Content Description (Short Bio)</label><textarea name="meta_content_description" rows="3"></textarea></div>
+
+                    <h3 class="section-title">Influence & Impact</h3>
+                    <div class="form-group">
+                        <label>Have you collaborated with brands before?</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="radio" name="meta_collab_brands" value="Yes" required> Yes</label>
+                            <label class="option-label"><input type="radio" name="meta_collab_brands" value="No"> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>If yes, list collaborations</label><textarea name="meta_collab_list" rows="2"></textarea></div>
+                    <div class="form-group"><label>Estimated monthly reach across platforms</label><input type="text" name="meta_monthly_reach"></div>
+                    <div class="form-group"><label>Upload Media Kit / Portfolio</label><input type="file" name="media_kit" accept=".pdf,.doc,.docx,.jpg,.png"></div>
+
+                    <h3 class="section-title">Participation Interest</h3>
+                    <div class="form-group"><label>Why do you want to attend ASMIS?</label><textarea name="meta_why_attend" rows="2"></textarea></div>
+                    <div class="form-group"><label>How will you contribute to promoting Africa through your content?</label><textarea name="meta_how_contribute" rows="2"></textarea></div>
+                    
+                    <h3 class="section-title">Declaration</h3>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="confirm_info" required> 
+                        <label for="confirm_info">I confirm the information provided is accurate and agree to ASMIS participation guidelines.</label>
+                    </div>
+                    <div class="roles-grid-bottom" style="margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group" style="margin: 0;"><label>Signature</label><input type="text" name="meta_signature" required style="margin-bottom: 0;"></div>
+                        <div class="form-group" style="margin: 0;"><label>Date</label><input type="date" name="meta_signature_date" required style="margin-bottom: 0;"></div>
+                    </div>
+                `;
+            } else if (role === 'Partner') {
+                html += sharedStyles + `
+                    <h3 class="section-title">Organization Information</h3>
+                    <div class="form-group"><label>Organization Name</label><input type="text" name="organization" required></div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="radio" name="meta_org_type" value="Government" required> Government</label>
+                            <label class="option-label"><input type="radio" name="meta_org_type" value="International Organization"> International Organization</label>
+                            <label class="option-label"><input type="radio" name="meta_org_type" value="Private Company"> Private Company</label>
+                            <label class="option-label"><input type="radio" name="meta_org_type" value="NGO"> NGO</label>
+                            <label class="option-label"><input type="radio" name="meta_org_type" value="Media"> Media</label>
+                            <label class="option-label"><input type="radio" name="meta_org_type" value="Academic"> Academic</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Country</label><input type="text" name="country" required></div>
+                    <div class="form-group"><label>City</label><input type="text" name="meta_city"></div>
+                    <div class="form-group"><label>Website</label><input type="url" name="meta_website"></div>
+
+                    <h3 class="section-title">Contact Person</h3>
+                    <div class="form-group"><label>Full Name</label><input type="text" name="full_name" required></div>
+                    <div class="form-group"><label>Position/Title</label><input type="text" name="meta_position"></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" name="email" required></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" name="phone" required></div>
+
+                    <h3 class="section-title">Partnership Interest</h3>
+                    <div class="form-group">
+                        <label>Partnership Type</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="checkbox" name="meta_partnership_type" value="Strategic" required> Strategic</label>
+                            <label class="option-label"><input type="checkbox" name="meta_partnership_type" value="Institutional"> Institutional</label>
+                            <label class="option-label"><input type="checkbox" name="meta_partnership_type" value="Media"> Media</label>
+                            <label class="option-label"><input type="checkbox" name="meta_partnership_type" value="Knowledge"> Knowledge</label>
+                            <label class="option-label"><input type="checkbox" name="meta_partnership_type" value="Community"> Community</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Area of Collaboration</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="checkbox" name="meta_collab_area" value="Digital Media"> Digital Media</label>
+                            <label class="option-label"><input type="checkbox" name="meta_collab_area" value="Youth Empowerment"> Youth Empowerment</label>
+                            <label class="option-label"><input type="checkbox" name="meta_collab_area" value="Technology"> Technology</label>
+                            <label class="option-label"><input type="checkbox" name="meta_collab_area" value="Cultural Promotion"> Cultural Promotion</label>
+                            <label class="option-label"><input type="checkbox" name="meta_collab_area" value="Tourism Promotion"> Tourism Promotion</label>
+                            <label class="option-label"><input type="checkbox" name="meta_collab_area" value="Pan-African Collaboration"> Pan-African Collaboration</label>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Proposed Contribution</h3>
+                    <div class="form-group">
+                        <label>How will your organization contribute?</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="checkbox" name="meta_contribution_type" value="Financial"> Financial</label>
+                            <label class="option-label"><input type="checkbox" name="meta_contribution_type" value="Technical"> Technical</label>
+                            <label class="option-label"><input type="checkbox" name="meta_contribution_type" value="Media Promotion"> Media Promotion</label>
+                            <label class="option-label"><input type="checkbox" name="meta_contribution_type" value="Knowledge"> Knowledge</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Describe proposed collaboration</label><textarea name="meta_collaboration_desc" rows="3"></textarea></div>
+
+                    <h3 class="section-title">Organization Profile</h3>
+                    <div class="form-group"><label>Brief description of your organization</label><textarea name="meta_org_description" rows="3"></textarea></div>
+                    <div class="form-group"><label>Upload organization profile (optional)</label><input type="file" name="org_profile" accept=".pdf,.doc,.docx,.jpg,.png"></div>
+
+                    <h3 class="section-title">Declaration</h3>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="confirm_info" required> 
+                        <label for="confirm_info">We confirm our interest in partnering with ASMIS.</label>
+                    </div>
+                    <div class="roles-grid-bottom" style="margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group" style="margin: 0;"><label>Authorized Representative Signature</label><input type="text" name="meta_signature" required style="margin-bottom: 0;"></div>
+                        <div class="form-group" style="margin: 0;"><label>Date</label><input type="date" name="meta_signature_date" required style="margin-bottom: 0;"></div>
+                    </div>
+                `;
+            } else if (role === 'Sponsor') {
+                html += sharedStyles + `
+                    <h3 class="section-title">Company Information</h3>
+                    <div class="form-group"><label>Company Name</label><input type="text" name="organization" required></div>
+                    <div class="form-group"><label>Industry</label><input type="text" name="meta_industry"></div>
+                    <div class="form-group"><label>Country</label><input type="text" name="country" required></div>
+                    <div class="form-group"><label>Website</label><input type="url" name="meta_website"></div>
+                    <div class="form-group"><label>Company Address</label><input type="text" name="meta_address"></div>
+
+                    <h3 class="section-title">Contact Person</h3>
+                    <div class="form-group"><label>Full Name</label><input type="text" name="full_name" required></div>
+                    <div class="form-group"><label>Position</label><input type="text" name="meta_position"></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" name="email" required></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" name="phone" required></div>
+
+                    <h3 class="section-title">Sponsorship Interest</h3>
+                    <div class="form-group">
+                        <label>Preferred Sponsorship Level</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="radio" name="meta_sponsorship_level" value="Platinum" required> Platinum</label>
+                            <label class="option-label"><input type="radio" name="meta_sponsorship_level" value="Gold"> Gold</label>
+                            <label class="option-label"><input type="radio" name="meta_sponsorship_level" value="Silver"> Silver</label>
+                            <label class="option-label"><input type="radio" name="meta_sponsorship_level" value="Official Partner"> Official Partner</label>
+                            <label class="option-label"><input type="radio" name="meta_sponsorship_level" value="Custom"> Custom</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Interested Sponsorship Categories</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="checkbox" name="meta_sponsorship_category" value="Title Sponsorship"> Title Sponsorship</label>
+                            <label class="option-label"><input type="checkbox" name="meta_sponsorship_category" value="Networking Session"> Networking Session</label>
+                            <label class="option-label"><input type="checkbox" name="meta_sponsorship_category" value="Digital Content Studio"> Digital Content Studio</label>
+                            <label class="option-label"><input type="checkbox" name="meta_sponsorship_category" value="Cultural Experience Day"> Cultural Experience Day</label>
+                            <label class="option-label"><input type="checkbox" name="meta_sponsorship_category" value="Media Lounge"> Media Lounge</label>
+                            <label class="option-label"><input type="checkbox" name="meta_sponsorship_category" value="Awards"> Awards</label>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Estimated Sponsorship Budget</h3>
+                    <div class="form-group">
+                        <label>Estimated Sponsorship Budget</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="radio" name="meta_budget" value="$10,000 – $25,000" required> $10,000 – $25,000</label>
+                            <label class="option-label"><input type="radio" name="meta_budget" value="$25,000 – $50,000"> $25,000 – $50,000</label>
+                            <label class="option-label"><input type="radio" name="meta_budget" value="$50,000 – $100,000"> $50,000 – $100,000</label>
+                            <label class="option-label"><input type="radio" name="meta_budget" value="$100,000 – $150,000"> $100,000 – $150,000</label>
+                            <label class="option-label"><input type="radio" name="meta_budget" value="$150,000 – $200,000"> $150,000 – $200,000</label>
+                            <label class="option-label"><input type="radio" name="meta_budget" value="$200,000+"> $200,000+</label>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title">Sponsorship Objectives</h3>
+                    <div class="form-group">
+                        <label>Objectives</label>
+                        <div class="options-grid">
+                            <label class="option-label"><input type="checkbox" name="meta_objectives" value="Brand Visibility"> Brand Visibility</label>
+                            <label class="option-label"><input type="checkbox" name="meta_objectives" value="Market Expansion"> Market Expansion</label>
+                            <label class="option-label"><input type="checkbox" name="meta_objectives" value="Influencer Partnerships"> Influencer Partnerships</label>
+                            <label class="option-label"><input type="checkbox" name="meta_objectives" value="CSR"> CSR</label>
+                            <label class="option-label"><input type="checkbox" name="meta_objectives" value="Digital Campaign Promotion"> Digital Campaign Promotion</label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Additional Comments</label><textarea name="meta_comments" rows="3"></textarea></div>
+
+                    <h3 class="section-title">Declaration</h3>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="confirm_info" required> 
+                        <label for="confirm_info">We confirm our interest in sponsoring ASMIS.</label>
+                    </div>
+                    <div class="roles-grid-bottom" style="margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group" style="margin: 0;"><label>Authorized Signature</label><input type="text" name="meta_signature" required style="margin-bottom: 0;"></div>
+                        <div class="form-group" style="margin: 0;"><label>Date</label><input type="date" name="meta_signature_date" required style="margin-bottom: 0;"></div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="form-group"><label>Full Name</label><input type="text" name="full_name" required></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" name="email" required></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" name="phone"></div>
+                    <div class="form-group"><label>Country</label><input type="text" name="country" required></div>
+                    <div class="form-group"><label>Organization (Optional)</label><input type="text" name="organization"></div>
+                `;
+                if (role === 'Media') {
+                    html += `
+                        <div class="form-group"><label>Media Outlet</label><input type="text" name="meta_outlet"></div>
+                        <div class="form-group"><label>Role</label><select name="meta_media_role"><option>Journalist</option><option>Photographer</option><option>Videographer</option><option>Blogger</option><option>Editor</option></select></div>`;
+                } else if (role === 'Speaker') {
+                    html += `
+                        <div class="form-group"><label>Topic / Expertise</label><input type="text" name="meta_topic"></div>
+                        <div class="form-group"><label>Session Type</label><select name="meta_session_type"><option>Keynote Address</option><option>Panel Discussion</option><option>Workshop</option><option>Fireside Chat</option></select></div>
+                        <div class="form-group"><label>Bio / Portfolio Link</label><input type="url" name="meta_bio_link"></div>
+                        <div class="form-group"><label>Upload Profile Photo</label><input type="file" name="profile_photo" accept="image/*" required></div>`;
+                } else if (role === 'Public Applicant') {
+                    html += `
+                        <div class="form-group"><label>Referral Source</label><select name="meta_referral"><option>Social Media</option><option>Friend / Colleague</option><option>News Article</option><option>Website</option><option>Other</option></select></div>`;
+                }
+            }
+
+            html += `<button type="submit" class="submit-btn" id="submitBtn">Submit Application</button>`;
+            dynamicFields.innerHTML = html;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // clear msg
+            const msgEl = document.getElementById('formMessage');
+            if (msgEl) msgEl.style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('registrationModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('registrationModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const msgEl = document.getElementById('formMessage');
+
+            const phone = this.elements['phone']?.value;
+            if (phone && !/^\+?[\d\s\-()]{7,20}$/.test(phone)) {
+                msgEl.style.display = 'block';
+                msgEl.style.color = '#f44336';
+                msgEl.innerHTML = '⚠️ Invalid phone number format. Please provide a valid number.';
+                return;
+            }
+
+            const formData = new FormData(this);
+
+            if (submitBtn) {
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+            }
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    body: formData // sending multipart/form-data natively
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    msgEl.style.display = 'block';
+                    msgEl.style.color = '#4caf50';
+                    msgEl.innerHTML = '✅ Registration successful! Your confirmation has been sent.';
+                    this.reset();
+                } else {
+                    throw new Error(result.error || 'Registration failed');
+                }
+            } catch (err) {
+                msgEl.style.display = 'block';
+                msgEl.style.color = '#f44336';
+                msgEl.innerHTML = '⚠️ ' + err.message + '. Please try again.';
+            } finally {
+                if (submitBtn) {
+                    submitBtn.textContent = 'Submit Application';
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

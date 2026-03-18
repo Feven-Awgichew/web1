@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASMIS | Influence for a Better Africa!</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Robust Carousel Fixes */
+        .speakers-carousel-wrapper {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 20px !important;
+            max-width: 1450px !important;
+            margin: 50px auto !important;
+            padding: 0 20px !important;
+        }
+        .carousel-ctrl-btn {
+            flex-shrink: 0 !important;
+            background: linear-gradient(135deg, #d4a95a 0%, #c29958 50%, #8a6b3a 100%) !important;
+            border: 3px solid rgba(255, 255, 255, 0.3) !important;
+            color: #120e0c !important;
+            width: 85px !important;
+            height: 85px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            display: none; /* Managed by JS */
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 2.5rem !important;
+            font-weight: 900 !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        .carousel-ctrl-btn:hover {
+            transform: scale(1.15) !important;
+            background: #fff !important;
+            box-shadow: 0 15px 40px rgba(194, 153, 88, 0.5) !important;
+        }
+        .speakers-carousel-container {
+            flex: 1 !important;
+            overflow: hidden !important;
+            border-radius: 12px !important;
+            background: rgba(0,0,0,0.2) !important;
+            padding: 20px 0 !important;
+        }
+        .speakers-grid {
+            display: flex !important;
+            gap: 40px !important;
+            transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1) !important;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .speaker-card {
+            flex: 0 0 calc(33.333% - 26.666px) !important;
+            min-width: calc(33.333% - 26.666px) !important;
+            max-width: calc(33.333% - 26.666px) !important;
+            background: rgba(25, 20, 15, 0.8) !important;
+            backdrop-filter: blur(15px) !important;
+            border: 1px solid rgba(194, 153, 88, 0.2) !important;
+            border-top: 5px solid var(--primary) !important;
+            padding: 40px 30px !important;
+            text-align: center !important;
+            border-radius: 12px !important;
+            box-sizing: border-box !important;
+            transition: all 0.4s ease !important;
+        }
+        .speaker-initial-circle {
+            width: 120px !important;
+            height: 120px !important;
+            background: linear-gradient(135deg, var(--primary), #8a6b3a) !important;
+            color: #000 !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 auto 25px !important;
+            font-size: 3.5rem !important;
+            font-weight: 900 !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important;
+        }
+        .speaker-name { font-family: 'Playfair Display', serif !important; color: #fff !important; font-size: 1.5rem !important; margin-bottom: 8px !important; }
+        .speaker-role-tag { color: var(--primary) !important; font-size: 0.85rem !important; text-transform: uppercase !important; letter-spacing: 2px !important; font-weight: 800 !important; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-top-border"></div>
+        <div class="header-main"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 4px 40px;">
+
+            <!-- Logo Left -->
+            <a href="index.html" class="logo-container">
+                <div class="logo-graphic-container">
+                    <img src="./assets/asmis_logo_new.png" alt="ASMIS" class="logo-graphic">
+                </div>
+                <span class="logo-brand-text">ASMIS</span>
+            </a>
+
+            <!-- Right Nav -->
+            <div class="nav-group"
+                style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
+                <a href="index.html" style="color: var(--primary);">HOME</a>
+                <span style="color: #666;">|</span>
+                <a href="about.html">ABOUT</a>
+                <span style="color: #666;">|</span>
+                <a href="media.html">GALLERY</a>
+                <span style="color: #666;">|</span>
+                <a href="news.html">NEWS</a>
+                <span style="color: #666;">|</span>
+                <a href="#events">EVENTS</a>
+
+                <a href="register.html"
+                    style="padding: 8px 18px; font-size: 0.75rem; border-radius: 5px; background: linear-gradient(135deg, var(--primary), #8a6b3a); color: #120e0c; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 3px 0 #7a5c2e, 0 4px 8px rgba(0,0,0,0.3); transition: all 0.15s; margin-left: 10px;">REGISTER
+                    / LOG IN</a>
+            </div>
+        </div>
+        <div class="header-bottom-border"></div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-visual">
+                <!-- Interactive Africa Map Overlay -->
+                <div class="africa-map-container" style="width: 100%; height: 100%; position: relative;">
+                    <div class="africa-map" style="z-index: 1;"></div>
+
+                    <svg id="africaSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"
+                        style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; pointer-events: none;">
+
+                        <!-- Completely invisible regions for tooltip-only interaction -->
+                        <path data-country="Senegal" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 230 300 L 320 250 L 320 300 Z" />
+                        <path data-country="Mali" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 120 380 L 160 300 L 320 300 L 320 380 Z" />
+                        <path data-country="Western Sahara" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 100 200 L 160 180 L 220 220 L 150 250 Z" />
+                        <path data-country="Algeria" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 280 150 L 440 150 L 440 320 L 280 320 Z" />
+                        <path data-country="Ghana" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 320 450 L 320 530 L 380 530 L 380 450 Z" />
+                        <path data-country="Egypt" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;"
+                            d="M 600 160 L 740 160 L 740 320 L 600 320 Z" />
+                        <path data-country="Ethiopia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 300 L 640 300 Q 660 350 640 450 L 550 450 Z" />
+                        <path data-country="Tanzania" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 450 L 640 450 L 600 550 L 550 550 Z" />
+                        <path data-country="Uganda" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 500 L 550 550 L 520 550 L 520 500 Z" />
+                        <path data-country="Rwanda" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 520 520 L 520 550 L 490 550 L 490 520 Z" />
+                        <path data-country="Nigeria" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 550 L 600 550 L 580 670 L 480 670 Z" />
+                        <path data-country="South Africa" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 670 L 580 670 Q 550 820 460 900 L 400 750 Z" />
+
+                        <!-- Additional Regions for Better Coverage -->
+                        <path data-country="Morocco" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 160 140 L 280 110 L 300 150 L 220 190 Z" />
+                        <path data-country="Tunisia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 440 120 L 480 120 L 480 180 L 440 180 Z" />
+                        <path data-country="Libya" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 150 L 600 150 L 600 320 L 480 320 Z" />
+                        <path data-country="Sudan" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 580 320 L 680 320 L 680 480 L 580 480 Z" />
+                        <path data-country="Somalia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 640 350 L 700 380 L 700 480 L 640 450 Z" />
+                        <path data-country="Kenya" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 580 450 L 640 450 L 640 500 L 580 500 Z" />
+                        <path data-country="DR Congo" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 420 450 L 550 450 L 550 580 L 420 580 Z" />
+                        <path data-country="Angola" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 400 580 L 480 580 L 480 670 L 400 670 Z" />
+                        <path data-country="Namibia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 400 670 L 480 670 L 480 750 L 400 750 Z" />
+                        <path data-country="Madagascar" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 650 650 L 700 650 L 700 750 L 650 750 Z" />
+                        <path data-country="Mauritania" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 120 250 L 200 200 L 300 250 L 200 350 Z" />
+                        <path data-country="Chad" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 380 350 L 450 350 L 450 450 L 380 450 Z" />
+                        <path data-country="Niger" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 300 300 L 380 300 L 380 380 L 300 380 Z" />
+                        <path data-country="Ivory Coast" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 250 450 L 320 450 L 320 500 L 250 500 Z" />
+                        <path data-country="Cameroon" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 380 450 L 420 450 L 420 530 L 380 530 Z" />
+                        <path data-country="Zambia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 580 L 550 580 L 550 640 L 480 640 Z" />
+                        <path data-country="Zimbabwe" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 640 L 550 640 L 550 670 L 480 670 Z" />
+                        <path data-country="Botswana" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 450 670 L 500 670 L 500 730 L 450 730 Z" />
+                        <path data-country="Mozambique" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 580 L 600 580 L 620 750 L 580 750 Z" />
+                    </svg>
+                </div>
+                <!-- Social Icons inside the hero visual area to match mockup orbit -->
+                <!-- Facebook -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: 0s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z" />
+                    </svg>
+                </div>
+                <!-- Twitter (X) -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -5.45s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+                    </svg>
+                </div>
+                <!-- Instagram -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -10.91s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+                    </svg>
+                </div>
+                <!-- LinkedIn -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -16.36s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z" />
+                    </svg>
+                </div>
+                <!-- YouTube -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -21.82s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M549.65 124.08c-6.28-23.65-24.79-42.15-48.44-48.43C458.51 64 288 64 288 64S117.49 64 74.79 75.65c-23.65 6.28-42.15 24.78-48.43 48.43C14.71 166.78 14.71 256 14.71 256s0 89.22 11.65 131.92c6.28 23.65 24.78 42.15 48.43 48.43C117.49 448 288 448 288 448s170.51 0 213.21-11.65c23.65-6.28 42.16-24.78 48.44-48.43C561.29 345.22 561.29 256 561.29 256s0-89.22-11.64-131.92zM232 337V175l144 81-144 81z" />
+                    </svg>
+                </div>
+                <!-- TikTok -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -27.27s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0l88 0a121.18 121.18 0 0 0 1.86 22.17A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z" />
+                    </svg>
+                </div>
+                <!-- Telegram -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -32.73s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z" />
+                    </svg>
+                </div>
+                <!-- Snapchat -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -38.18s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M256 32c-35.3 0-66.4 13-89.2 34.2s-36.8 51.5-36.8 85.8 14 64.6 36.8 85.8c7.5 7 15.6 12.5 24.3 16.5-6.6 4.7-12.2 11.2-16 18.2-10 18.2-5.4 40.5 11.6 52.8l32.1 23.2-32.1 23.2c-17 12.3-21.6 34.6-11.6 52.8s31.5 23.6 51.1 13.9L256 416l29.9 16.3c19.6 9.7 41.1 4.3 51.1-13.9s5.4-40.5-11.6-52.8l-32.1-23.2 32.1-23.2c17-12.3 21.6-34.6 11.6-52.8-3.8-7-9.4-13.5-16-18.2 8.7-4 16.8-9.5 24.3-16.5 22.8-21.2 36.8-51.5 36.8-85.8s-14-64.6-36.8-85.8S291.3 32 256 32z" />
+                    </svg>
+                </div>
+                <!-- Pinterest -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -43.64s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M496 256c0 137-111 248-248 248-25.6 0-50.2-3.9-73.4-11.1 10.1-16.5 25.2-43.5 30.8-65 3-11.6 15.4-59 15.4-59 8.1 15.4 31.7 28.5 56.8 28.5 74.8 0 128.7-68.8 128.7-154.3 0-81.9-66.9-143.2-152.9-143.2-107 0-163.9 71.8-163.9 150.1 0 36.4 19.4 81.7 50.3 96.1 4.7 2.2 7.2 1.2 8.3-3.3.8-3.4 5-20.3 6.9-28.1.6-2.5.3-4.7-1.7-7.1-10.1-12.5-18.3-35.3-18.3-56.6 0-54.7 41.4-107.6 112-107.6 60.9 0 103.6 41.5 103.6 100.9 0 67.1-33.9 113.6-78 113.6-24.3 0-42.6-20.1-36.7-44.8 7-29.5 20.5-61.3 20.5-82.6 0-19-10.2-34.9-31.4-34.9-24.9 0-44.9 25.7-44.9 60.2 0 22 7.4 36.8 7.4 36.8s-24.5 103.8-29 123.2c-5 21.4-3 51.5-.5 71.9C81.4 451.9 0 363.4 0 256 0 119 111 8 248 8s248 111 248 248z" />
+                    </svg>
+                </div>
+                <!-- WhatsApp -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -49.09s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.4-8.6-44.6-27.6-16.5-14.7-27.6-32.8-30.8-38.4-3.2-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.5-9.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+                    </svg>
+                </div>
+                <!-- Reddit -->
+                <div class="orbital-icon" style="--speed: 60s; animation-delay: -54.55s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+                        <path fill="currentColor"
+                            d="M201.5 305.5c-13.8 0-24.9-11.1-24.9-24.9 0-13.8 11.1-24.9 24.9-24.9 13.8 0 24.9 11.1 24.9 24.9 0 13.8-11.1 24.9-24.9 24.9zM312 280.6c0 13.8 11.1 24.9 24.9 24.9 13.8 0 24.9-11.1 24.9-24.9 0-13.8-11.1-24.9-24.9-24.9-13.8 0-24.9 11.1-24.9 24.9zM448 256c0-44.2-35.8-80-80-80-28.2 0-53.1 14.6-67.5 36.6-43.2-23.3-100.5-38.3-163.7-41.2l34-113.9 83.4 24.9c2 17.6 17 31.4 35.1 31.4 19.3 0 35-15.7 35-35s-15.7-35-35-35c-15.8 0-29.1 10.5-33.5 25l-95.2-28.5c-5.1-1.5-10.4 1.3-11.9 6.4L165.7 186c-65.7 1.8-126.1 17.5-171.1 42.1-14.4-22-39.3-36.6-67.6-36.6-44.2 0-80 35.8-80 80 0 29.3 22 54 50.8 71.9l-3.3 2.1c-.2 4.4-.3 8.9-.3 13.3 0 68.6 100.8 124.2 225.2 124.2s225.2-55.6 225.2-124.2c0-4.4-.1-8.9-.3-13.3l-3.3-2.1c28.8-17.9 50.8-42.6 50.8-71.9zM72 256c0-26.5 21.5-48 48-48 8.8 0 17.1 2.4 24.3 6.6C103.5 233.1 82.5 256 72 256zm322.2 144.1c-19.3 19.3-52.1 31.9-98.2 31.9s-78.9-12.6-98.2-31.9c-4.3-4.3-4.3-11.3 0-15.6s11.3-4.3 15.6 0c15 15 43.1 26.5 82.6 26.5s67.6-11.5 82.6-26.5c4.3-4.3 11.3-4.3 15.6 0s4.3 11.3 0 15.6zm10.5-131.5c-7.2-4.2-15.5-6.6-24.3-6.6-26.5 0-48 21.5-48 48 0 13.8 21 37.1 31.5 48 10.5-10.9 40.8-33.8 40.8-48z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="hero-content animate-fade-in">
+                <p class="tagline" style="color: #fff;">ASMIS </p>
+                <h1 style="font-size: 4.5rem; color: #fff;">"Creating Impact <br> <span
+                        style="color: var(--primary);">for a Better Africa."</span></h1>
+
+                <div class="countdown-container">
+                    <div class="countdown-unit">
+                        <span id="days">00</span>
+                        <label>Days</label>
+                    </div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-unit">
+                        <span id="hours">00</span>
+                        <label>Hours</label>
+                    </div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-unit">
+                        <span id="minutes">00</span>
+                        <label>Mins</label>
+                    </div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-unit">
+                        <span id="seconds">00</span>
+                        <label>Secs</label>
+                    </div>
+                </div>
+
+                <div class="hero-details">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18" height="18">
+                                <path fill="currentColor"
+                                    d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zM312 376c13.3 0 24-10.7 24-24s-10.7-24-24-24s-24 10.7-24 24s10.7 24 24 24z" />
+                            </svg>
+                        </div>
+                        <span>April 20-21, 2026</span>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="18" height="18">
+                                <path fill="currentColor"
+                                    d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z" />
+                            </svg>
+                        </div>
+                        <span>Addis Ababa, Ethiopia • African Union HQ</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="register.html" class="hero-cta-gold">Register Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact Statistics Section -->
+        <section class="stats-overview-wrapper" style="padding: 60px 10%; background: #120e0c;">
+            <div class="stats-overview"
+                style="padding: 40px; background: rgba(255,255,255,0.03); border: 1px solid rgba(194, 153, 88, 0.2); border-radius: 20px; position: relative; overflow: hidden; backdrop-filter: blur(10px);">
+                <!-- Decorative African Pattern Background (SVG) -->
+                <div
+                    style="position: absolute; top:0; left:0; width:100%; height:100%; opacity: 0.1; pointer-events: none; z-index: 0;">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="tribalDotsHome" x="0" y="0" width="40" height="40"
+                                patternUnits="userSpaceOnUse">
+                                <circle cx="2" cy="2" r="2" fill="#c29958" />
+                                <circle cx="20" cy="20" r="1.5" fill="#c29958" opacity="0.5" />
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#tribalDotsHome)" />
+                    </svg>
+                </div>
+
+                <h2
+                    style="text-align: center; color: var(--primary); font-size: 2.2rem; margin-bottom: 2.5rem; text-transform: uppercase; letter-spacing: 4px; position: relative; z-index: 1;">
+                    Our <span style="color: #fff;">Impact</span></h2>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px; position: relative; z-index: 1;">
+                    <!-- Stat Item 1 -->
+                    <div style="text-align: center; padding: 20px; border-right: 1px solid rgba(194,153,88,0.15);">
+                        <div class="stat-number" data-target="0"
+                            style="font-size: 3rem; font-weight: 900; color: #fff; line-height: 1;">0</div>
+                        <div
+                            style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-top: 10px;">
+                            Countries</div>
+                    </div>
+                    <!-- Stat Item 2 -->
+                    <div style="text-align: center; padding: 20px; border-right: 1px solid rgba(194,153,88,0.15);">
+                        <div class="stat-number" data-target="0"
+                            style="font-size: 3rem; font-weight: 900; color: #fff; line-height: 1;">0</div>
+                        <div
+                            style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-top: 10px;">
+                            Influencers</div>
+                    </div>
+                    <!-- Stat Item 3 -->
+                    <div style="text-align: center; padding: 20px; border-right: 1px solid rgba(194,153,88,0.15);">
+                        <div class="stat-number" data-target="0"
+                            style="font-size: 3rem; font-weight: 900; color: #fff; line-height: 1;">0</div>
+                        <div
+                            style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-top: 10px;">
+                            Speakers</div>
+                    </div>
+                    <!-- Stat Item 4 -->
+                    <div style="text-align: center; padding: 20px; border-right: 1px solid rgba(194,153,88,0.15);">
+                        <div class="stat-number" data-target="0"
+                            style="font-size: 3rem; font-weight: 900; color: #fff; line-height: 1;">0</div>
+                        <div
+                            style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-top: 10px;">
+                            Media</div>
+                    </div>
+                    <!-- Stat Item 5 -->
+                    <div style="text-align: center; padding: 20px;">
+                        <div class="stat-number" data-target="0"
+                            style="font-size: 3rem; font-weight: 900; color: #fff; line-height: 1;">0</div>
+                        <div
+                            style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-top: 10px;">
+                            Sponsors
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" style="padding: 100px 10%; background: #120e0c; border-top: 5px solid var(--secondary);"
+            class="animate-fade-in">
+
+
+            <h3 id="highlights" style="font-size: 2rem; text-align: center; margin-bottom: 2.5rem; color: #fff;">Event
+                <span style="color: var(--primary);">Highlights</span>
+            </h3>
+
+            <!-- Highlights Part -->
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; margin-bottom: 5rem;">
+                <div class="highlight-card">
+                    <div class="highlight-icon">📣</div>
+                    <h3>Social Media Strategies</h3>
+                    <p style="color: #888; font-size: 0.9rem;">Expert insights on content growth.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🤝</div>
+                    <h3>Networking</h3>
+                    <p style="color: #888; font-size: 0.9rem;">Connect with top influencers.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">💡</div>
+                    <h3>Workshops</h3>
+                    <p style="color: #888; font-size: 0.9rem;">Hands-on digital training.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🛡️</div>
+                    <h3>Latest Trends</h3>
+                    <p style="color: #888; font-size: 0.9rem;">Staying ahead in the digital era.</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 4rem;">
+                <a href="#" class="premium-button"
+                    style="background: none; border: 1px solid var(--primary); color: var(--primary);">Learn More</a>
+            </div>
+
+            <!-- Schedule Part -->
+            <h3 id="schedule"
+                style="font-size: 2rem; text-align: center; margin-top: 5rem; margin-bottom: 1rem; color: #fff;">Event
+                <span style="color: var(--primary);">Schedule</span>
+            </h3>
+            <p style="text-align: center; color: #888; margin-bottom: 4rem;">Two days of insights, networking, and
+                innovation.</p>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; max-width: 1200px; margin: 0 auto; position: relative;">
+                <!-- Day 1 -->
+                <div
+                    style="background: rgba(18, 14, 12, 0.8); border: 1px solid rgba(194,153,88,0.2); border-radius: 16px; padding: 30px; position: relative;">
+                    <div
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">
+                        Day 1</h3>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 2rem;">April 20, 2026</p>
+
+                    <ul style="list-style: none; padding: 0; margin: 0; position: relative;">
+                        <!-- Timeline line -->
+                        <div
+                            style="position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(194,153,88,0.2);">
+                        </div>
+
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 10px var(--primary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">09:00 AM - Opening Ceremony
+                            </h4>
+                            <p style="color: #888; font-size: 0.85rem;">Welcome address by AU Leadership and ASMIS
+                                Organizers.</p>
+                        </li>
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">10:30 AM - Keynote: The
+                                Digital Africa</h4>
+                            <p style="color: #888; font-size: 0.85rem;">Shaping narratives through impactful content
+                                creation.</p>
+                        </li>
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">12:00 PM - Panel:
+                                Monetization Strategies</h4>
+                            <p style="color: #888; font-size: 0.85rem;">Experts discuss turning followers into revenue.
+                            </p>
+                        </li>
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">02:00 PM - Interactive
+                                Workshops</h4>
+                            <p style="color: #888; font-size: 0.85rem;">Deep dive into TikTok trends, Instagram growth,
+                                and Youtube SEO.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Day 2 -->
+                <div
+                    style="background: rgba(18, 14, 12, 0.8); border: 1px solid rgba(194,153,88,0.2); border-radius: 16px; padding: 30px; position: relative;">
+                    <div
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--secondary); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    </div>
+                    <h3
+                        style="color: var(--secondary); font-size: 1.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">
+                        Day 2</h3>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 2rem;">April 21, 2026</p>
+
+                    <ul style="list-style: none; padding: 0; margin: 0; position: relative;">
+                        <!-- Timeline line -->
+                        <div
+                            style="position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(194,153,88,0.2);">
+                        </div>
+
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary); box-shadow: 0 0 10px var(--secondary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">09:30 AM - Tech & Tools
+                                Showcase</h4>
+                            <p style="color: #888; font-size: 0.85rem;">Discover latest equipments and AI tools for
+                                content creators.</p>
+                        </li>
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">11:00 AM - Brand
+                                Partnerships Masterclass</h4>
+                            <p style="color: #888; font-size: 0.85rem;">Pitching and negotiating with global brands.</p>
+                        </li>
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">02:30 PM - ASMIS Awards 2026
+                            </h4>
+                            <p style="color: #888; font-size: 0.85rem;">Recognizing top influencers across multiple
+                                categories.</p>
+                        </li>
+                        <li class="schedule-item"
+                            style="position: relative; padding-left: 30px; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;">
+                            <div
+                                style="position: absolute; left: 6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);">
+                            </div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 4px;">05:00 PM - Closing Party &
+                                Networking</h4>
+                            <p style="color: #888; font-size: 0.85rem;">Gala dinner, music, and exclusive networking
+                                opportunities.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="speakers" style="padding: 120px 0; position: relative;" class="animate-fade-in">
+            <h2 style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">Meet Our <span
+                    style="color: var(--primary);">Speakers</span></h2>
+            <p style="text-align: center; color: #888; margin-bottom: 4rem;">Unlocking the Potential of Social Media in
+                Africa</p>
+            
+            <div class="speakers-carousel-wrapper">
+                <button id="speakerPrev" class="carousel-ctrl-btn">&#8592;</button>
+                
+                <div class="speakers-carousel-container">
+                    <div class="speakers-grid" id="speakersGrid">
+                        <!-- Dynamically populated from backend -->
+                    </div>
+                </div>
+
+                <button id="speakerNext" class="carousel-ctrl-btn">&#8594;</button>
+            </div>
+        </section>
+
+
+        <section id="sponsors"
+            style="padding: 60px 5%; background: linear-gradient(180deg, #0a0a0a, #120e0c); border-top: 1px solid rgba(194,153,88,0.15); overflow: hidden;">
+            <h2
+                style="text-align: center; color: var(--primary); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 0.5rem;">
+                Our Sponsors &amp; Partners</h2>
+            <p style="text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 3rem;">Proudly supported by
+                leading organizations across Africa and beyond</p>
+            <div class="sponsors-track" id="sponsorsTrack" style="min-height: 150px; display: flex; align-items: center;">
+                <!-- Dynamically populated from backend -->
+            </div>
+        </section>
+
+
+
+        <!-- Newsletter Section -->
+        <section id="newsletter" class="newsletter-section animate-fade-in">
+            <div class="newsletter-box">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Stay in the <span
+                        style="color: var(--primary);">Loop</span></h2>
+                <p style="color: #888; font-size: 1.1rem;">Subscribe to our newsletter for exclusive updates, speaker
+                    announcements, and digital creator insights.</p>
+
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+                    <button type="submit" class="premium-button newsletter-btn">Subscribe Now</button>
+                </form>
+                <p style="margin-top: 20px; font-size: 0.8rem; color: #555;">We respect your privacy. Unsubscribe at any
+                    time.</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <style>
+            .social-icon-link {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                background: #000;
+                border: 2px solid #c29958;
+                color: #c29958;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            }
+
+            .social-icon-link:hover {
+                background: #c29958;
+                color: #000;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(194, 153, 88, 0.3);
+            }
+        </style>
+        <section id="contact"
+            style="padding: 80px 10%; background: linear-gradient(180deg, #120e0c, #0d0a08); border-top: 1px solid rgba(194,153,88,0.15);">
+            <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">Get In <span
+                    style="color: var(--primary);">Touch</span></h2>
+            <p style="text-align: center; color: #777; font-size: 0.95rem; margin-bottom: 4rem;">Have questions about
+                ASMIS 2026? We'd love to hear from you.</p>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; max-width: 1000px; margin: 0 auto;">
+                <!-- Address -->
+                <div style="text-align: center;">
+                    <div
+                        style="width: 45px; height: 45px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg, #bd9f60, #8c7335); border: 1px solid #8c7335; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #000;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px;">
+                        Our Location</h3>
+                    <p style="color: #999; font-size: 0.9rem; line-height: 1.6;">African Union Headquarters<br>Addis
+                        Ababa, Ethiopia</p>
+                </div>
+
+                <!-- Email -->
+                <div style="text-align: center;">
+                    <div
+                        style="width: 45px; height: 45px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg, #bd9f60, #8c7335); border: 1px solid #8c7335; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #000;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px;">
+                        Email Us</h3>
+                    <p style="color: #999; font-size: 0.9rem; line-height: 1.6;"><a href="mailto:info@asmis2026.com"
+                            style="color: #ccc; text-decoration: none;">info@asmis2026.com</a><br><a
+                            href="mailto:support@asmis2026.com"
+                            style="color: #ccc; text-decoration: none;">support@asmis2026.com</a></p>
+                </div>
+
+                <!-- Phone -->
+                <div style="text-align: center;">
+                    <div
+                        style="width: 45px; height: 45px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg, #bd9f60, #8c7335); border: 1px solid #8c7335; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #000;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3
+                        style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px;">
+                        Call Us</h3>
+                    <p style="color: #999; font-size: 0.9rem; line-height: 1.6;">+251 11 123 4567<br>+251 91 234 5678
+                    </p>
+                </div>
+            </div>
+
+            <!-- Social Media Links -->
+            <div style="text-align: center; margin-top: 4rem;">
+                <h3
+                    style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 1.5rem;">
+                    Follow Us</h3>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                            </path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+                            </path>
+                            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer line -->
+            <div
+                style="text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(194,153,88,0.1);">
+                <p style="color: #555; font-size: 0.8rem;">&copy; 2026 ASMIS — African Social Media Influencers Summit.
+                    All rights reserved.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="map-tooltip"></div>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

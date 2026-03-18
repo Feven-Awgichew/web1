@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASMIS | Registration Statistics</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .stats-container {
+            max-width: 900px;
+            margin: 150px auto 100px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3rem;
+            border-radius: 8px;
+            border: 1px solid var(--primary);
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-container h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .chart-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(194, 153, 88, 0.2);
+        }
+
+        .stats-table th {
+            color: var(--primary);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <!-- Tribal Divider Top -->
+        <div
+            style="height: 4px; background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 40px, #000 40px, #000 80px); opacity: 0.6;">
+        </div>
+        <div class="header-main"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 4px 40px;">
+
+            <!-- Logo Left -->
+            <a href="index.html" class="logo-container">
+                <div class="logo-graphic-container">
+                    <img src="./assets/asmis_logo_new.png" alt="ASMIS" class="logo-graphic">
+                </div>
+                <span class="logo-brand-text">ASMIS</span>
+            </a>
+
+            <!-- Right Nav -->
+            <div class="nav-group"
+                style="gap: 18px; font-size: 0.85rem; justify-content: flex-end; align-items: center;">
+                <a href="index.html">HOME</a>
+                <span style="color: #666;">|</span>
+                <a href="about.html">ABOUT</a>
+                <span style="color: #666;">|</span>
+                <a href="media.html">GALLERY</a>
+                <span style="color: #666;">|</span>
+                <a href="news.html">NEWS</a>
+                <span style="color: #666;">|</span>
+                <a href="index.html#events">EVENTS</a>
+
+                <a href="register.html"
+                    style="padding: 8px 18px; font-size: 0.75rem; border-radius: 5px; background: linear-gradient(135deg, var(--primary), #8a6b3a); color: #120e0c; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 3px 0 #7a5c2e, 0 4px 8px rgba(0,0,0,0.3); transition: all 0.15s; margin-left: 10px;">REGISTER
+                    / LOG IN</a>
+            </div>
+        </div>
+        <div class="header-bottom-border"></div>
+    </header>
+
+    <main class="stats-container animate-fade-in">
+        <h1>Registration Statistics by Country</h1>
+
+        <div class="chart-wrapper">
+            <canvas id="countryChart" width="400" height="200"></canvas>
+        </div>
+
+        <table class="stats-table" id="statsTable">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>Registered Users</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data injected via JS -->
+                try {
+                const response = await fetch('/api/stats/countries');
+                const data = await response.json(); // Now an object like { "Ethiopia": { total: 10, Influencer: 5... }
+                }
+
+                const tbody = document.querySelector('#statsTable tbody');
+                tbody.innerHTML = '';
+
+                const countryNames = Object.keys(data);
+                if (countryNames.length === 0) {
+                tbody.innerHTML = '<tr>
+                    <td colspan="2" style="text-align: center;">No registrations yet.</td>
+                </tr>';
+                return;
+                }
+
+                // Sort countries by total count descending
+                countryNames.sort((a, b) => data[b].total - data[a].total);
+
+                const labels = [];
+                const counts = [];
+
+                countryNames.forEach(countryName => {
+                const stat = data[countryName];
+                labels.push(countryName);
+                counts.push(stat.total);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${countryName}</td>
+                <td>${stat.total}</td>`;
+                tbody.appendChild(tr);
+                });
+
+                // Render Chart
+                const ctx = document.getElementById('countryChart').getContext('2d');
+                new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: labels,
+                datasets: [{
+                label: 'Total Registered Users',
+                data: counts,
+                backgroundColor: '#c29958',
+                borderColor: '#c29958',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                scales: {
+                y: {
+                beginAtZero: true,
+                ticks: { color: '#fff', stepSize: 1 }
+                },
+                x: {
+                ticks: { color: '#fff' }
+                }
+                },
+                plugins: {
+                legend: {
+                labels: { color: '#fff' }
+                }
+                }
+                }
+                });
+                } catch (err) {
+                console.error('Error fetching stats:', err);
+                document.querySelector('#statsTable tbody').innerHTML = '<tr>
+                    <td colspan="2" style="text-align: center; color: red;">Failed to load statistics. Is the backend
+                        running?</td>
+                </tr>';
+                }
+                });
+                </script>
+</body>
+
+</html>
