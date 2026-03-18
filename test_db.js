@@ -3,7 +3,7 @@ const { Pool } = pkg;
 
 const testConnection = async () => {
   const pool = new Pool({
-    connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+    connectionString: 'postgresql://event_db_0oma_user:p2I1fs3LU8KEcb9N4hTv4nicvY9YS0Qx@dpg-d6t5j90gjchc73c7ih30-a/event_db_0oma',
   });
   try {
     await pool.query('SELECT 1');
