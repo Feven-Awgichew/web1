@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "selfsigned": "^5.5.0"
+  },
+  "devDependencies": {
+    "node-forge": "^1.3.3"
+  }
+}
