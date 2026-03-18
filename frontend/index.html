@@ -771,6 +771,25 @@
 
     <div id="map-tooltip"></div>
     <script type="module" src="main.js"></script>
+    <script>
+const sections = ['home','about','media','news','events'];
+
+function showSection(id) {
+    sections.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.style.display = s === id ? 'block' : 'none';
+    });
+}
+
+// Listen for hash changes
+window.addEventListener('hashchange', () => {
+    const hash = window.location.hash.replace('#','') || 'home';
+    showSection(hash);
+});
+
+// On page load, show the correct section
+showSection(window.location.hash.replace('#','') || 'home');
+</script>
 </body>
 
 </html>
