@@ -40,7 +40,7 @@ const certificates = (fs.existsSync(certFile) && fs.existsSync(keyFile)) ? {
 } : null;
 
 app.use(cors({
-    origin: ['https://192.168.10.49:5173', 'https://localhost:5173', 'http://localhost:5173'],
+    origin: ['https://192.168.10.49:5173', 'https://localhost:5173', 'https://web-1-ke1n.onrender.com'],
     credentials: true
 }));
 app.use(express.json());
