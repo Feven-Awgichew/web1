@@ -4,7 +4,8 @@ let adminUser = null;
 
 const checkSession = async () => {
     try {
-        const response = await fetch('https://web-12h1.onrender.com/api/admin/me', { credentials: 'include' });
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (!response.ok) {
             window.location.href = 'login.html';
             return null;
@@ -46,7 +47,8 @@ const setupUI = () => {
 const handleLogout = async (e) => {
     if (e) e.preventDefault();
     try {
-        await fetch('https://web-12h1.onrender.com/api/admin/logout', { method: 'POST' });
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
     } catch (err) {
         console.error('Logout error:', err);
     }
@@ -62,11 +64,13 @@ const setupLogout = () => {
 
 // Protected Fetch
 const authFetch = async (url, options = {}) => {
+    const BACKEND_URL = 'https://web-12h1.onrender.com';
+    const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
     options.credentials = 'include';
     options.headers = {
         ...options.headers
     };
-    const response = await fetch(url, options);
+    const response = await fetch(fullUrl, options);
     if (response.status === 401 || response.status === 403) {
         window.location.href = 'login.html';
     }
@@ -82,7 +86,7 @@ let isEditing = false;
 
 const fetchAdmins = async () => {
     try {
-        const response = await authFetch('https://web-12h1.onrender.com/api/admin/admins');
+        const response = await authFetch('/api/admin/admins');
         const data = await response.json();
         const listEl = document.getElementById('adminsList');
 
@@ -149,7 +153,7 @@ adminForm.addEventListener('submit', async (e) => {
         adminData.password = pass;
     }
 
-    const url = isEditing ? `/api/admin/admins/${id}` : 'https://web-12h1.onrender.com/api/admin/admins';
+    const url = isEditing ? `/api/admin/admins/${id}` : '/api/admin/admins';
     const method = isEditing ? 'PUT' : 'POST';
 
     try {
@@ -215,7 +219,7 @@ const setupProfileDropdown = () => {
 
 window.openProfileModal = async () => {
     try {
-        const response = await authFetch('https://web-12h1.onrender.com/api/admin/me');
+        const response = await authFetch('/api/admin/me');
         if (response.ok) {
             const admin = await response.json();
             document.getElementById('profileFullName').value = admin.full_name || '';
