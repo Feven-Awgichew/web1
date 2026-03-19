@@ -5,12 +5,7 @@ let adminUser = null;
 const checkSession = async () => {
     try {
         const BACKEND_URL = 'https://web-12h1.onrender.com';
-        const token = localStorage.getItem('admin_token');
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
-            credentials: 'include',
-            headers: headers
-        });
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (!response.ok) {
             window.location.href = 'login.html';
             return null;
@@ -30,11 +25,7 @@ const authFetch = async (url, options = {}) => {
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
     options.credentials = 'include';
     
-    const token = localStorage.getItem('admin_token');
-    const authHeader = token ? { 'Authorization': `Bearer ${token}` } : {};
-    
     options.headers = {
-        ...authHeader,
         ...options.headers
     };
     const response = await fetch(fullUrl, options);
@@ -125,14 +116,8 @@ const setupUI = () => {
         if (e) e.preventDefault();
         try {
             const BACKEND_URL = 'https://web-12h1.onrender.com';
-            const token = localStorage.getItem('admin_token');
-            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-            await fetch(`${BACKEND_URL}/api/admin/logout`, { 
-                method: 'POST', 
-                credentials: 'include',
-                headers: headers 
-            });
-            localStorage.removeItem('admin_token');
+            await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
+            localStorage.removeItem('admin_token'); // Cleanup legacy tokens
         } catch (err) {
             console.error('Logout error:', err);
         }
