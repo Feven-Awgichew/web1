@@ -25,9 +25,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             const data = await response.json();
             console.log('[Login] Successful. Storing session info and redirecting...');
 
-            if (data.token) {
-                localStorage.setItem('admin_token', data.token);
-            }
+            // Session is securely managed entirely by HttpOnly cookies
             
             // Redirect to dashboard
             window.location.href = 'dashboard.html';
@@ -48,12 +46,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 (async () => {
     try {
         const BACKEND_URL = 'https://web-12h1.onrender.com';
-        const token = localStorage.getItem('admin_token');
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
-            credentials: 'include',
-            headers: headers
-        });
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (response.ok) {
             window.location.href = 'dashboard.html';
         }
