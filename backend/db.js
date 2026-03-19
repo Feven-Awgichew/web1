@@ -27,6 +27,7 @@ export const initDb = async () => {
       status VARCHAR(20) DEFAULT 'pending', -- pending, approved, rejected
       remark TEXT,
       qr_code TEXT,
+      confirmation_code VARCHAR(50),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -116,6 +117,18 @@ export const initDb = async () => {
   try {
     await pool.query(createTablesQuery);
     console.log('Database tables initialized');
+
+    // Verify critical columns exist
+    const colCheck = await pool.query(
+      "SELECT column_name FROM information_schema.columns WHERE table_name='applicants' AND column_name='confirmation_code'"
+    );
+    if (colCheck.rows.length > 0) {
+      console.log('✅ confirmation_code column exists');
+    } else {
+      console.warn('⚠️ confirmation_code column MISSING - attempting manual add...');
+      await pool.query('ALTER TABLE applicants ADD COLUMN IF NOT EXISTS confirmation_code VARCHAR(50)');
+      console.log('✅ confirmation_code column added manually');
+    }
   } catch (err) {
     console.error('Error initializing database:', err);
   }
