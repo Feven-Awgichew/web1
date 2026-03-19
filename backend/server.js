@@ -26,7 +26,7 @@ const APP_URL = process.env.APP_URL || 'https://web-12h1.onrender.com';
 app.set('trust proxy', 1);
 
 app.use(cors({
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['https://web-12h1.onrender.com'],
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173', 'https://localhost:5173','https://web-12h1.onrender.com'],
     credentials: true
 }));
 app.use(express.json());
@@ -37,8 +37,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Multer Storage Configuration
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const dir = 'uploads/';
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        const dir = path.join(__dirname, 'uploads/');
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         cb(null, dir);
     },
     filename: function (req, file, cb) {
@@ -872,6 +872,15 @@ app.get('https://web-12h1.onrender.com/api/stats/weekly', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch weekly stats' });
     }
+});
+
+// Global Error Handler (Crucial for deployed environments to return JSON instead of HTML for errors)
+app.use((err, req, res, next) => {
+    console.error(`[Global Error] ${err.stack}`);
+    res.status(err.status || 500).json({
+        error: err.message || 'An unexpected server error occurred',
+        details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 });
 
 // --- SERVER START ---
