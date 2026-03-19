@@ -25,7 +25,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             const data = await response.json();
             console.log('[Login] Successful. Storing session info and redirecting...');
 
-            // Store role and username for UI (Removed: Token is in HttpOnly Cookie, and we fetch user info on demand)
+            if (data.token) {
+                localStorage.setItem('admin_token', data.token);
+            }
             
             // Redirect to dashboard
             window.location.href = 'dashboard.html';
@@ -46,7 +48,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 (async () => {
     try {
         const BACKEND_URL = 'https://web-12h1.onrender.com';
-        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
+        const token = localStorage.getItem('admin_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
+            credentials: 'include',
+            headers: headers
+        });
         if (response.ok) {
             window.location.href = 'dashboard.html';
         }
