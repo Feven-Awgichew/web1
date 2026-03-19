@@ -4,7 +4,8 @@ let adminUser = null;
 
 const checkSession = async () => {
     try {
-        const response = await fetch('/api/admin/me', { credentials: 'include' });
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (!response.ok) {
             window.location.href = 'login.html';
             return null;
@@ -96,7 +97,8 @@ const initUI = () => {
 const handleLogout = async (e) => {
     if (e) e.preventDefault();
     try {
-        await fetch('/api/admin/logout', { method: 'POST' });
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
     } catch (err) {
         console.error('Logout error:', err);
     }
@@ -113,21 +115,23 @@ const setupLogout = () => {
 
 // Protected Fetch Helper
 const authFetch = async (url, options = {}) => {
-    console.log(`[Dashboard] Fetching: ${url}`);
+    const BACKEND_URL = 'https://web-12h1.onrender.com';
+    const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
+    console.log(`[Dashboard] Fetching: ${fullUrl}`);
     options.credentials = 'include'; // Essential for cookies
     options.headers = {
         ...options.headers
     };
     try {
-        const response = await fetch(url, options);
-        console.log(`[Dashboard] Response from ${url}: ${response.status}`);
+        const response = await fetch(fullUrl, options);
+        console.log(`[Dashboard] Response from ${fullUrl}: ${response.status}`);
         if (response.status === 401) {
             console.warn('[Dashboard] Unauthorized! Redirecting to login.');
             window.location.href = 'login.html';
         }
         return response;
     } catch (err) {
-        console.error(`[Dashboard] Network error on ${url}:`, err);
+        console.error(`[Dashboard] Network error on ${fullUrl}:`, err);
         throw err;
     }
 };
