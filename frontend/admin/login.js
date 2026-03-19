@@ -9,7 +9,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     try {
         console.log(`[Login] Attempting sign-in for: ${username}`);
-        const response = await fetch('https://web-12h1.onrender.com/api/admin/login', {
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const response = await fetch(`${BACKEND_URL}/api/admin/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -44,7 +45,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 // Check if already logged in (using /api/admin/me instead of localStorage)
 (async () => {
     try {
-        const response = await fetch('https://web-12h1.onrender.com/api/admin/me', { credentials: 'include' });
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (response.ok) {
             window.location.href = 'dashboard.html';
         }
