@@ -8,7 +8,9 @@ import nodemailer from 'nodemailer';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import https from 'https';
 import fs from 'fs';
+import selfsigned from 'selfsigned';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { initDb, query } from './db.js';
@@ -20,13 +22,25 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const APP_URL = process.env.APP_URL || 'https://web-12h1.onrender.com';
 
 // Trust the proxy (Render/PaaS) to allow Secure cookies over HTTPS proxy
 app.set('trust proxy', 1);
 
+// SSL Certificate Generation for LAN/HTTPS
+const certDir = path.join(__dirname, 'certs');
+if (!fs.existsSync(certDir)) fs.mkdirSync(certDir);
+
+const certFile = path.join(__dirname, 'certs', 'cert.pem');
+const keyFile = path.join(__dirname, 'certs', 'key.pem');
+
+// SSL Certificate Handling - Optional for local, handled by proxy in production
+const certificates = (fs.existsSync(certFile) && fs.existsSync(keyFile)) ? {
+    cert: fs.readFileSync(certFile),
+    key: fs.readFileSync(keyFile)
+} : null;
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173', 'https://localhost:5173','https://web-12h1.onrender.com'],
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['https://web-1-ke1n.onrender.com', 'https://localhost:5173', 'http://localhost:5173'],
     credentials: true
 }));
 app.use(express.json());
@@ -48,26 +62,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Initialize Database & Auto-Seed Superadmin
-(async () => {
-    await initDb();
-    
-    // Auto-seed superadmin if table is empty
-    try {
-        const check = await query('SELECT count(*) FROM admins');
-        if (parseInt(check.rows[0].count) === 0) {
-            console.log("🚀 [Database] No admins found. Seeding default superadmin...");
-            const hash = await bcrypt.hash('superadmin123', 10);
-            await query(
-                'INSERT INTO admins (username, password_hash, role, full_name, email) VALUES ($1, $2, $3, $4, $5)',
-                ['superadmin', hash, 'superadmin', 'System Administrator', 'admin@asmis.com']
-            );
-            console.log("✅ [Database] Default superadmin created: superadmin / superadmin123");
-        }
-    } catch (err) {
-        console.error("❌ [Database] Seeding error:", err.message);
-    }
-})();
+// Initialize Database
+initDb();
 
 // Email Configuration
 const transporter = nodemailer.createTransport({
@@ -99,7 +95,7 @@ const sendNotificationEmail = async (applicantData) => {
                 </ul>
             ` : ''}
             <div style="margin-top: 20px;">
-                <a href="${APP_URL}/api/admin/approve-from-email/${applicantData.id}" 
+                <a href="https://192.168.10.49:5000/api/admin/approve-from-email/${applicantData.id}" 
                    style="background-color: #c29958; color: #120e0c; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
                     Approve Applicant
                 </a>
@@ -300,7 +296,7 @@ app.post('https://web-12h1.onrender.com/api/admin/login', async (req, res) => {
         res.cookie('admin_token', token, {
             httpOnly: true,
             secure: true, // Only sent over HTTPS
-            sameSite: 'none', // ⬅️ CRITICAL FIX: Required for Cross-Site cookies on Render
+            sameSite: 'lax', // Protect against CSRF
             maxAge: 15 * 60 * 1000 // 15 minutes
         });
 
@@ -311,19 +307,15 @@ app.post('https://web-12h1.onrender.com/api/admin/login', async (req, res) => {
     }
 });
 
-app.post('https://web-12h1.onrender.com/api/admin/logout', (req, res) => {
-    res.clearCookie('admin_token', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none'
-    });
+app.post('/api/admin/logout', (req, res) => {
+    res.clearCookie('admin_token');
     res.json({ success: true });
 });
 
 // --- Public Routes ---
 
 // Get All News
-app.get('https://web-12h1.onrender.com/api/news', async (req, res) => {
+app.get('/https://web-12h1.onrender.comapi/news', async (req, res) => {
     try {
         const result = await query('SELECT * FROM news ORDER BY date DESC, created_at DESC');
         res.json(result.rows);
@@ -360,7 +352,7 @@ app.get('https://web-12h1.onrender.com/api/gallery', async (req, res) => {
 });
 
 // Create Gallery Item (Admin)
-app.post('https://web-12h1.onrender.com/api/admin/gallery', authenticateAdmin, upload.single('media'), async (req, res) => {
+app.post('/api/admin/gallery', authenticateAdmin, upload.single('media'), async (req, res) => {
     const { title, type, event_name } = req.body;
     const media_url = req.file ? `/uploads/${req.file.filename}` : '';
 
@@ -427,7 +419,7 @@ app.post('https://web-12h1.onrender.com/api/register', upload.any(), async (req,
 // --- Admin Routes ---
 
 // GET current authenticated admin's profile
-app.get('https://web-12h1.onrender.com/api/admin/me', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/me', authenticateAdmin, async (req, res) => {
     try {
         const result = await query(
             'SELECT id, username, full_name, email, role, created_at FROM admins WHERE id = $1',
@@ -442,7 +434,7 @@ app.get('https://web-12h1.onrender.com/api/admin/me', authenticateAdmin, async (
 });
 
 // PUT update current admin's profile
-app.put('https://web-12h1.onrender.com/api/admin/profile', authenticateAdmin, async (req, res) => {
+app.put('/api/admin/profile', authenticateAdmin, async (req, res) => {
     const { full_name, email, username, password } = req.body;
     try {
         let result;
@@ -483,7 +475,7 @@ app.put('https://web-12h1.onrender.com/api/admin/profile', authenticateAdmin, as
 });
 
 // Get All Admins (Superadmin only)
-app.get('https://web-12h1.onrender.com/api/admin/admins', authenticateAdmin, requireSuperadmin, async (req, res) => {
+app.get('/api/admin/admins', authenticateAdmin, requireSuperadmin, async (req, res) => {
     try {
         const result = await query('SELECT id, username, full_name, email, role, created_at FROM admins ORDER BY created_at DESC');
         res.json(result.rows);
@@ -493,7 +485,7 @@ app.get('https://web-12h1.onrender.com/api/admin/admins', authenticateAdmin, req
 });
 
 // Create Admin (Superadmin only)
-app.post('https://web-12h1.onrender.com/api/admin/admins', authenticateAdmin, requireSuperadmin, async (req, res) => {
+app.post('/api/admin/admins', authenticateAdmin, requireSuperadmin, async (req, res) => {
     const { username, password, role } = req.body;
     try {
         // Policy Check
@@ -517,7 +509,7 @@ app.post('https://web-12h1.onrender.com/api/admin/admins', authenticateAdmin, re
 });
 
 // Update Admin (Superadmin only)
-app.put('https://web-12h1.onrender.com/api/admin/admins/:id', authenticateAdmin, requireSuperadmin, async (req, res) => {
+app.put('/api/admin/admins/:id', authenticateAdmin, requireSuperadmin, async (req, res) => {
     const { id } = req.params;
     const { username, password, role } = req.body;
     try {
@@ -557,7 +549,7 @@ app.put('https://web-12h1.onrender.com/api/admin/admins/:id', authenticateAdmin,
 });
 
 // Delete Admin (Superadmin only)
-app.delete('https://web-12h1.onrender.com/api/admin/admins/:id', authenticateAdmin, requireSuperadmin, async (req, res) => {
+app.delete('/api/admin/admins/:id', authenticateAdmin, requireSuperadmin, async (req, res) => {
     const { id } = req.params;
     try {
         if (id == req.admin.id) return res.status(400).json({ error: 'Cannot delete your own account' });
@@ -576,7 +568,7 @@ app.delete('https://web-12h1.onrender.com/api/admin/admins/:id', authenticateAdm
 });
 
 // Register VIP (Superadmin only)
-app.post('https://web-12h1.onrender.com/api/admin/register-vip', authenticateAdmin, requireSuperadmin, async (req, res) => {
+app.post('/api/admin/register-vip', authenticateAdmin, requireSuperadmin, async (req, res) => {
     const { role, full_name, email, country, organization, social_handle, phone, metadata } = req.body;
 
     // Phone validation (if provided)
@@ -615,11 +607,16 @@ app.post('https://web-12h1.onrender.com/api/admin/register-vip', authenticateAdm
 });
 
 // Get All Applicants
-app.get('https://web-12h1.onrender.com/api/admin/applicants', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/applicants', authenticateAdmin, async (req, res) => {
     try {
         const { role, country } = req.query;
         let sql = 'SELECT id, role, full_name, email, country, organization, social_handle, phone, status, remark, qr_code, confirmation_code, created_at FROM applicants WHERE 1=1';
         const params = [];
+
+        // Updated visibility: Allowing all admins to see all roles including VIPs per request
+        // if (req.admin.role === 'admin') {
+        //     sql += ` AND role NOT IN ('VIP', 'VVIP')`;
+        // }
 
         if (role) {
             params.push(role);
@@ -640,7 +637,7 @@ app.get('https://web-12h1.onrender.com/api/admin/applicants', authenticateAdmin,
 });
 
 // Get Single Applicant (for badge viewing)
-app.get('https://web-12h1.onrender.com/api/admin/applicants/:id', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/applicants/:id', authenticateAdmin, async (req, res) => {
     try {
         const result = await query('SELECT * FROM applicants WHERE id = $1', [req.params.id]);
         if (result.rows.length === 0) return res.status(404).json({ error: 'Applicant not found' });
@@ -652,7 +649,7 @@ app.get('https://web-12h1.onrender.com/api/admin/applicants/:id', authenticateAd
 });
 
 // Get Stats Grouped By Role for Chart.js
-app.get('https://web-12h1.onrender.com/api/admin/stats/roles', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/stats/roles', authenticateAdmin, async (req, res) => {
     try {
         const sql = `
             SELECT role, COUNT(*) as count 
@@ -668,7 +665,7 @@ app.get('https://web-12h1.onrender.com/api/admin/stats/roles', authenticateAdmin
 });
 
 // GET Summary Stats (Total, Speakers, Impact)
-app.get('https://web-12h1.onrender.com/api/admin/stats/summary', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/stats/summary', authenticateAdmin, async (req, res) => {
     try {
         const totalResult = await query('SELECT COUNT(*) FROM applicants');
         const speakerResult = await query("SELECT COUNT(*) FROM applicants WHERE role = 'Speaker'");
@@ -697,7 +694,7 @@ app.get('https://web-12h1.onrender.com/api/admin/stats/summary', authenticateAdm
 });
 
 // GET Country Distribution for Map
-app.get('https://web-12h1.onrender.com/api/admin/stats/map-distribution', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/stats/map-distribution', authenticateAdmin, async (req, res) => {
     try {
         const sql = `
             SELECT country, COUNT(*) as count 
@@ -712,11 +709,15 @@ app.get('https://web-12h1.onrender.com/api/admin/stats/map-distribution', authen
     }
 });
 
+// (Old stats endpoints removed, replaced by new versions below)
+
+
 // Approve Applicant & Generate QR
-app.post('https://web-12h1.onrender.com/api/admin/approve/:id', authenticateAdmin, async (req, res) => {
+app.post('/api/admin/approve/:id', authenticateAdmin, async (req, res) => {
     const { id } = req.params;
     const { remark } = req.body;
     try {
+        // Generate QR Code data based on a unique confirmation code (string only)
         const confirmationCode = generateConfirmationCode();
         const qrImage = await QRCode.toDataURL(confirmationCode, {
             width: 300,
@@ -729,6 +730,8 @@ app.post('https://web-12h1.onrender.com/api/admin/approve/:id', authenticateAdmi
             ['approved', remark, qrImage, confirmationCode, id]
         );
 
+        // Mock Notification
+        console.log(`Notification: Applicant ${result.rows[0].email} approved with code ${confirmationCode}.`);
         sendApplicantApprovalEmail(result.rows[0], qrImage, confirmationCode);
 
         await query('INSERT INTO audit_logs (admin_id, action, target_id) VALUES ($1, $2, $3)',
@@ -740,8 +743,8 @@ app.post('https://web-12h1.onrender.com/api/admin/approve/:id', authenticateAdmi
     }
 });
 
-// Reject Applicant
-app.post('https://web-12h1.onrender.com/api/admin/reject/:id', authenticateAdmin, async (req, res) => {
+// Reject Applicant (Superadmin only for VIP/VVIP, but allowing all admins for now as requested for general applicants)
+app.post('/api/admin/reject/:id', authenticateAdmin, async (req, res) => {
     const { id } = req.params;
     const { remark } = req.body;
     try {
@@ -754,6 +757,7 @@ app.post('https://web-12h1.onrender.com/api/admin/reject/:id', authenticateAdmin
             return res.status(404).json({ error: 'Applicant not found' });
         }
 
+        console.log(`Notification: Applicant ${result.rows[0].email} rejected.`);
         sendApplicantRejectionEmail(result.rows[0], remark);
 
         await query('INSERT INTO audit_logs (admin_id, action, target_id) VALUES ($1, $2, $3)',
@@ -766,8 +770,8 @@ app.post('https://web-12h1.onrender.com/api/admin/reject/:id', authenticateAdmin
     }
 });
 
-// QR Scan Verification
-app.get('https://web-12h1.onrender.com/api/admin/verify-qr/:code', authenticateAdmin, async (req, res) => {
+// QR Scan Verification (by confirmation code)
+app.get('/api/admin/verify-qr/:code', authenticateAdmin, async (req, res) => {
     const { code } = req.params;
     try {
         const result = await query('SELECT * FROM applicants WHERE confirmation_code = $1', [code]);
@@ -782,15 +786,18 @@ app.get('https://web-12h1.onrender.com/api/admin/verify-qr/:code', authenticateA
 });
 
 // One-Click Email Approval
-app.get('https://web-12h1.onrender.com/api/admin/approve-from-email/:id', async (req, res) => {
+app.get('/api/admin/approve-from-email/:id', async (req, res) => {
     const { id } = req.params;
     try {
+        // Find applicant
         const applicantResult = await query('SELECT * FROM applicants WHERE id = $1', [id]);
         if (applicantResult.rows.length === 0) {
             return res.status(404).send('<h1>Error</h1><p>Applicant not found.</p>');
         }
 
         const applicant = applicantResult.rows[0];
+
+        // Process Approval
         const confirmationCode = generateConfirmationCode();
         const qrImage = await QRCode.toDataURL(confirmationCode);
 
@@ -807,24 +814,58 @@ app.get('https://web-12h1.onrender.com/api/admin/approve-from-email/:id', async 
         res.send(`
             <div style="font-family: sans-serif; text-align: center; padding: 50px;">
                 <h1 style="color: #4caf50;">✅ Successfully Approved!</h1>
-                <p>The applicant <strong>${applicant.full_name}</strong> has been approved.</p>
-                <p style="font-size: 1.5rem; font-weight: bold; color: #c29958;">${confirmationCode}</p>
-                <p>A QR code has been sent to their email.</p>
+                <p>The applicant <strong>${applicant.full_name}</strong> (${applicant.role}) has been approved.</p>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #ddd;">
+                    <p style="margin: 0; color: #666; font-size: 0.8rem;">Confirmation Code:</p>
+                    <p style="margin: 5px 0 0; font-size: 1.5rem; font-weight: bold; color: #c29958;">${confirmationCode}</p>
+                </div>
+                <p>A QR code has been generated for their accreditation.</p>
+                <hr style="width: 50px; border: 2px solid #eee; margin: 30px auto;">
+                <p style="color: #666; font-size: 0.9rem;">ASMIS Web Portal Admin</p>
             </div>
         `);
     } catch (err) {
-        res.status(500).send('<h1>Error</h1><p>Approval failed.</p>');
+        res.status(500).send('<h1>Error</h1><p>Approval failed. Please try through the main dashboard.</p>');
     }
 });
 
-// Public Stats Summary
-app.get('https://web-12h1.onrender.com/api/stats/summary', async (req, res) => {
+// --- PUBLIC STATS ENDPOINTS ---
+
+// Sponsors endpoints - Fetch approved Sponsor-role applicants
+app.get('/api/public/sponsors', async (req, res) => {
+    try {
+        const result = await query(
+            "SELECT id, full_name, organization, country, metadata FROM applicants WHERE role = 'Sponsor' AND status = 'approved' ORDER BY created_at DESC"
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch sponsors' });
+    }
+});
+
+app.post('/api/admin/sponsors', authenticateAdmin, requireSuperadmin, async (req, res) => {
+    const { name, logo_url, website_url } = req.body;
+    try {
+        const result = await query(
+            'INSERT INTO sponsors (name, logo_url, website_url) VALUES ($1, $2, $3) RETURNING *',
+            [name, logo_url, website_url]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to create sponsor' });
+    }
+});
+
+// Stats Summary (Impact) - Updated to include real sponsors count
+app.get('/api/stats/summary', async (req, res) => {
     try {
         const stats = await query(`
             SELECT 
                 (SELECT COUNT(*) FROM applicants WHERE status = 'approved') as total_applications,
                 (SELECT COUNT(DISTINCT country) FROM applicants WHERE status = 'approved') as total_countries,
                 (SELECT COUNT(*) FROM applicants WHERE role = 'Speaker' AND status = 'approved') as total_speakers,
+                (SELECT COUNT(*) FROM applicants WHERE role = 'Influencer' AND status = 'approved') as total_influencers,
+                (SELECT COUNT(*) FROM applicants WHERE role = 'Media' AND status = 'approved') as total_media,
                 (SELECT COUNT(*) FROM sponsors) as total_sponsors
         `);
 
@@ -833,15 +874,121 @@ app.get('https://web-12h1.onrender.com/api/stats/summary', async (req, res) => {
             total: parseInt(row.total_applications),
             countries: parseInt(row.total_countries),
             speakers: parseInt(row.total_speakers),
+            influencers: parseInt(row.total_influencers),
+            media: parseInt(row.total_media),
             sponsors: parseInt(row.total_sponsors)
         });
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch stats' });
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch summary stats' });
     }
 });
 
-// Public Speakers List
-app.get('https://web-12h1.onrender.com/api/public/speakers', async (req, res) => {
+// Stats by Country (for Interactive Map) - Enhanced with full role breakdown
+app.get('/api/stats/countries', async (req, res) => {
+    const { country } = req.query;
+    try {
+        let sql = `
+            SELECT 
+                country,
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE role = 'Influencer') as influencer_count,
+                COUNT(*) FILTER (WHERE role = 'Media') as media_count,
+                COUNT(*) FILTER (WHERE role = 'Speaker') as speaker_count,
+                COUNT(*) FILTER (WHERE role = 'Partner') as partner_count,
+                COUNT(*) FILTER (WHERE role = 'Sponsor') as sponsor_count,
+                COUNT(*) FILTER (WHERE role = 'Public Applicant') as public_count,
+                COUNT(*) FILTER (WHERE role IN ('VIP', 'VVIP')) as vip_count,
+                COUNT(*) FILTER (WHERE status = 'approved' OR role IN ('VIP','VVIP')) as approved_count,
+                COUNT(*) FILTER (WHERE status = 'pending') as pending_count
+            FROM applicants
+        `;
+        const params = [];
+        if (country) {
+            sql += ` WHERE LOWER(country) = LOWER($1)`;
+            params.push(country);
+        }
+        sql += ` GROUP BY country ORDER BY total DESC`;
+
+        const result = await query(sql, params);
+
+        if (country) {
+            if (result.rows.length === 0) {
+                return res.json({ country, total: 0, influencer_count: 0, media_count: 0, speaker_count: 0, partner_count: 0, sponsor_count: 0, vip_count: 0, approved_count: 0, pending_count: 0 });
+            }
+            const row = result.rows[0];
+            return res.json({
+                country: row.country,
+                total: parseInt(row.total) || 0,
+                influencer_count: parseInt(row.influencer_count) || 0,
+                media_count: parseInt(row.media_count) || 0,
+                speaker_count: parseInt(row.speaker_count) || 0,
+                partner_count: parseInt(row.partner_count) || 0,
+                sponsor_count: parseInt(row.sponsor_count) || 0,
+                public_count: parseInt(row.public_count) || 0,
+                vip_count: parseInt(row.vip_count) || 0,
+                approved_count: parseInt(row.approved_count) || 0,
+                pending_count: parseInt(row.pending_count) || 0
+            });
+        }
+
+        // Return all countries keyed by lowercase name for flexible case-insensitive matching
+        const countryStats = {};
+        result.rows.forEach(row => {
+            const key = (row.country || '').toLowerCase().trim();
+            countryStats[key] = {
+                country: row.country,
+                total: parseInt(row.total) || 0,
+                influencer_count: parseInt(row.influencer_count) || 0,
+                media_count: parseInt(row.media_count) || 0,
+                speaker_count: parseInt(row.speaker_count) || 0,
+                partner_count: parseInt(row.partner_count) || 0,
+                sponsor_count: parseInt(row.sponsor_count) || 0,
+                public_count: parseInt(row.public_count) || 0,
+                vip_count: parseInt(row.vip_count) || 0,
+                approved_count: parseInt(row.approved_count) || 0,
+                pending_count: parseInt(row.pending_count) || 0
+            };
+        });
+
+        res.json(countryStats);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch country stats' });
+    }
+});
+
+// Weekly Registration Growth for Admin Dashboard
+app.get('/api/stats/weekly', async (req, res) => {
+    try {
+        const result = await query(`
+            SELECT 
+                TO_CHAR(d.day, 'Mon DD') as date,
+                COALESCE(count(a.id), 0) as count
+            FROM (
+                SELECT generate_series(
+                    CURRENT_DATE - INTERVAL '6 days', 
+                    CURRENT_DATE, 
+                    '1 day'::interval
+                )::date as day
+            ) d
+            LEFT JOIN applicants a ON DATE(a.created_at) = d.day
+            GROUP BY d.day
+            ORDER BY d.day ASC
+        `);
+
+        res.json(result.rows.map(row => ({
+            date: row.date,
+            count: parseInt(row.count)
+        })));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch weekly stats' });
+    }
+});
+
+// All Approved Speakers for homepage carousel
+app.get('/api/public/speakers', async (req, res) => {
     try {
         const result = await query(`
             SELECT full_name, organization, role, country, metadata 
@@ -851,40 +998,23 @@ app.get('https://web-12h1.onrender.com/api/public/speakers', async (req, res) =>
         `);
         res.json(result.rows);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Failed to fetch speakers' });
     }
 });
 
-// Weekly Growth Stats
-app.get('https://web-12h1.onrender.com/api/stats/weekly', async (req, res) => {
-    try {
-        const result = await query(`
-            SELECT TO_CHAR(d.day, 'Mon DD') as date, COALESCE(count(a.id), 0) as count
-            FROM (SELECT generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day'::interval)::date as day) d
-            LEFT JOIN applicants a ON DATE(a.created_at) = d.day
-            GROUP BY d.day ORDER BY d.day ASC
-        `);
-
-        res.json(result.rows.map(row => ({
-            date: row.date,
-            count: parseInt(row.count)
-        })));
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch weekly stats' });
-    }
-});
-
-// Global Error Handler (Crucial for deployed environments to return JSON instead of HTML for errors)
+// Global Error Handler
 app.use((err, req, res, next) => {
     console.error(`[Global Error] ${err.stack}`);
     res.status(err.status || 500).json({
-        error: err.message || 'An unexpected server error occurred',
-        details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        error: err.message || 'An unexpected server error occurred'
     });
 });
 
 // --- SERVER START ---
+
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Production Server live on port ${PORT}`);
-    console.log(`URL: ${APP_URL}`);
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Open at http://localhost:${PORT} or your deployment URL`);
 });
+
