@@ -1058,20 +1058,35 @@
             }
 
             try {
-                const res = await fetch('/api/register', {
+                const res = await fetch('https://web-12h1.onrender.com/api/register', {
                     method: 'POST',
-                    body: formData // sending multipart/form-data natively
+                    body: formData
                 });
-                const result = await res.json();
-                if (res.ok) {
-                    msgEl.style.display = 'block';
-                    msgEl.style.color = '#4caf50';
-                    msgEl.innerHTML = '✅ Registration successful! Your confirmation has been sent.';
-                    this.reset();
+
+                // Check if response is JSON
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const result = await res.json();
+                    if (res.ok) {
+                        msgEl.style.display = 'block';
+                        msgEl.style.color = '#4caf50';
+                        msgEl.innerHTML = '✅ Registration successful! Your confirmation has been sent.';
+                        this.reset();
+                    } else {
+                        throw new Error(result.error || 'Registration failed');
+                    }
                 } else {
-                    throw new Error(result.error || 'Registration failed');
+                    // Not JSON, handle server errors like 404 or 502
+                    if (res.status === 404) {
+                        throw new Error('API endpoint not found. Please check if the backend is correctly deployed and linked.');
+                    } else {
+                        const text = await res.text();
+                        console.error('Non-JSON response received:', text);
+                        throw new Error(`Server returned an unexpected response (${res.status}). Please try again later.`);
+                    }
                 }
             } catch (err) {
+                console.error('Registration fetch error:', err);
                 msgEl.style.display = 'block';
                 msgEl.style.color = '#f44336';
                 msgEl.innerHTML = '⚠️ ' + err.message + '. Please try again.';
