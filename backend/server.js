@@ -280,7 +280,7 @@ const requireSuperadmin = (req, res, next) => {
     next();
 };
 
-app.post('https://web-12h1.onrender.com/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
     try {
         const result = await query('SELECT * FROM admins WHERE username = $1', [username]);
@@ -315,7 +315,7 @@ app.post('/api/admin/logout', (req, res) => {
 // --- Public Routes ---
 
 // Get All News
-app.get('/https://web-12h1.onrender.comapi/news', async (req, res) => {
+app.get('/api/news', async (req, res) => {
     try {
         const result = await query('SELECT * FROM news ORDER BY date DESC, created_at DESC');
         res.json(result.rows);
@@ -325,7 +325,7 @@ app.get('/https://web-12h1.onrender.comapi/news', async (req, res) => {
 });
 
 // Create News (Admin)
-app.post('https://web-12h1.onrender.com/api/admin/news', authenticateAdmin, upload.single('image'), async (req, res) => {
+app.post('/api/admin/news', authenticateAdmin, upload.single('image'), async (req, res) => {
     const { title, description, date, link } = req.body;
     const image_url = req.file ? `/uploads/${req.file.filename}` : '';
 
@@ -342,7 +342,7 @@ app.post('https://web-12h1.onrender.com/api/admin/news', authenticateAdmin, uplo
 });
 
 // Get All Gallery Items
-app.get('https://web-12h1.onrender.com/api/gallery', async (req, res) => {
+app.get('/api/gallery', async (req, res) => {
     try {
         const result = await query('SELECT * FROM gallery ORDER BY created_at DESC');
         res.json(result.rows);
@@ -375,7 +375,7 @@ const validatePhone = (phone) => {
 };
 
 // Register Applicant
-app.post('https://web-12h1.onrender.com/api/register', upload.any(), async (req, res) => {
+app.post('/api/register', upload.any(), async (req, res) => {
     console.log("=== API REGISTER CALLED ===");
     console.log("REQ.BODY:", req.body);
     console.log("REQ.FILES:", req.files);
