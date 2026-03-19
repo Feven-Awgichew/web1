@@ -16,18 +16,22 @@ form.addEventListener('submit', async (e) => {
     try {
         const response = await fetch('https://web-12h1.onrender.com/api/register', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: formData
         });
 
-        if (response.ok) {
-            messageEl.style.display = 'block';
-            messageEl.style.color = 'var(--accent)';
-            messageEl.innerText = 'Application submitted successfully! Check your email for confirmation.';
-            form.reset();
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            const data = await response.json();
+            if (response.ok) {
+                messageEl.style.display = 'block';
+                messageEl.style.color = 'var(--accent)';
+                messageEl.innerText = 'Application submitted successfully! Check your email for confirmation.';
+                form.reset();
+            } else {
+                throw new Error(data.error || 'Registration failed');
+            }
         } else {
-            const err = await response.json();
-            throw new Error(err.error || 'Registration failed');
+            throw new Error(`Server returned an unexpected response (${response.status}). Potential API link issue.`);
         }
     } catch (err) {
         messageEl.style.display = 'block';
