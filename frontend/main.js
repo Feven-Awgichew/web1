@@ -59,7 +59,7 @@ const initAfricaMap = async () => {
 
         const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
-        // --- Elite Glowing African Borders (Clean & Minimalist) ---
+        // --- Elite Glowing African Borders (Re-tuned to warm Honey Gold) ---
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
@@ -67,9 +67,9 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(18, 14, 12, 0.7)") // Strong contrast against background
-            .attr("stroke", "#ffcc00") // Electric Vivid Gold
-            .attr("stroke-width", "2.4")
+            .attr("fill", "rgba(10, 8, 6, 0.8)") // Much darker, warmer fill
+            .attr("stroke", "#ffae00") // Warmer Honey Gold/Amber to match image
+            .attr("stroke-width", "2.6") // Slightly bolder border
             .style("filter", "url(#africa-bloom)")
             .style("pointer-events", "auto")
             .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
@@ -77,10 +77,10 @@ const initAfricaMap = async () => {
                 const countryName = d.properties.name;
                 currentCountry = countryName;
                 d3.select(this)
-                    .attr("fill", "rgba(194, 153, 88, 0.25)")
+                    .attr("fill", "rgba(255, 174, 0, 0.35)") // Warmer golden hover fill
                     .attr("stroke", "#ffffff")
                     .attr("stroke-width", "3.5")
-                    .style("filter", "url(#africa-bloom) drop-shadow(0 0 25px rgba(194, 153, 88, 0.9))");
+                    .style("filter", "url(#africa-bloom) drop-shadow(0 0 25px rgba(255, 174, 0, 0.9))");
 
                 showLoadingTooltip(countryName, event.clientX, event.clientY);
                 clearTimeout(fetchTimeout);
