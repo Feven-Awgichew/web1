@@ -9,7 +9,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     try {
         console.log(`[Login] Attempting sign-in for: ${username}`);
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'http://204.168.219.139:5005';
         const response = await fetch(`${BACKEND_URL}/api/admin/login`, {
             method: 'POST',
             headers: {
@@ -45,7 +45,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 // Check if already logged in (using /api/admin/me instead of localStorage)
 (async () => {
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'http://204.168.219.139:5005';
         const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (response.ok) {
             window.location.href = 'dashboard.html';
