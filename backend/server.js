@@ -277,7 +277,8 @@ const authenticateAdmin = (req, res, next) => {
     let token = req.cookies?.admin_token;
     let authSource = 'Cookie';
     
-    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const authHeader = req.headers.authorization || req.headers['Authorization'];
+    if (authHeader) console.log(`[Auth] Received Auth Header: ${authHeader.substring(0, 15)}...`);
     if (!token && authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
         token = authHeader.substring(7).trim();
         authSource = 'Header';
