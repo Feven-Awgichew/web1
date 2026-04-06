@@ -28,6 +28,9 @@ updateCountdown();
 // Dynamic Africa Map Renderer using D3.js
 const initAfricaMap = async () => {
     const svg = d3.select("#africaSvg");
+    // Prevent stacking/duplicates by clearing existing elements
+    svg.selectAll("g, path, circle, line").remove();
+
     const width = 800;
     const height = 800;
 
@@ -51,61 +54,12 @@ const initAfricaMap = async () => {
             12, 24, 72, 108, 120, 132, 140, 148, 174, 178, 180, 204, 226, 231, 232, 248, 262, 
             266, 270, 288, 324, 384, 404, 426, 430, 434, 450, 454, 466, 478, 480, 504, 508, 
             516, 548, 562, 566, 624, 638, 646, 678, 686, 690, 694, 706, 710, 728, 729, 732, 
-            748, 768, 788, 800, 818, 834, 854, 894
+            548, 768, 788, 800, 818, 834, 854, 894
         ]);
 
         const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
-        // --- Final Extreme-Detail 'Neural Gold' Africa Map ---
-        const networkGroup = svg.append("g").attr("class", "hero-network");
-        
-        // 1. Ultra-High Density 'Neural Gold' Node Generation
-        const stars = [];
-        const anchors = africaCountries.map(d => projection(d3.geoCentroid(d)));
-        
-        // Increased to 900 nodes for the high-fidelity neural look in the reference image
-        for(let i=0; i<900; i++) {
-            const anchor = anchors[Math.floor(Math.random() * anchors.length)];
-            stars.push({
-                x: anchor[0] + (Math.random() - 0.5) * 190,
-                y: anchor[1] + (Math.random() - 0.5) * 190,
-                brightness: 0.5 + Math.random() * 0.5,
-                pulseSpeed: 1.5 + Math.random() * 2
-            });
-        }
-
-        // 2. Complex High-Octane Web Connections
-        // We use a tighter max distance but more connections to match the image's "electric" look
-        const maxDist = 48;
-        stars.forEach((s, i) => {
-            const nearest = stars
-                .map((other, idx) => ({ idx, dist: Math.hypot(s.x-other.x, s.y-other.y) }))
-                .filter(n => n.idx !== i && n.dist < maxDist)
-                .sort((a,b) => a.dist - b.dist)
-                .slice(0, 6); // Denser connection grid
-
-            nearest.forEach(n => {
-                networkGroup.append("line")
-                    .attr("x1", s.x).attr("y1", s.y)
-                    .attr("x2", stars[n.idx].x).attr("y2", stars[n.idx].y)
-                    .attr("stroke", "rgba(255, 204, 0, 0.7)") // Vibrantly Radiant Gold
-                    .attr("stroke-width", n.dist < 15 ? 1.4 : 0.6)
-                    .style("filter", "url(#africa-bloom)");
-            });
-        });
-
-        // 3. Shimmering Golden Stars (Nodes) - Intensive Glow Stage
-        networkGroup.selectAll(".star-node")
-            .data(stars.filter(() => Math.random() > 0.45)) // Higher density of super-novas
-            .enter()
-            .append("circle")
-            .attr("cx", d => d.x).attr("cy", d => d.y)
-            .attr("r", d => 1.0 + Math.random() * 2.2) // Larger core stars
-            .attr("fill", "#ffffff") // Brilliant White core for maximum glow contrast
-            .style("filter", "url(#africa-bloom)")
-            .attr("opacity", d => d.brightness);
-
-        // --- Elite Glowing African Borders (Enhanced for Visibility) ---
+        // --- Elite Glowing African Borders (Clean & Minimalist) ---
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
@@ -113,9 +67,9 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(18, 14, 12, 0.6)") // Darker backdrop contrast
+            .attr("fill", "rgba(18, 14, 12, 0.7)") // Strong contrast against background
             .attr("stroke", "#ffcc00") // Electric Vivid Gold
-            .attr("stroke-width", "2.2")
+            .attr("stroke-width", "2.4")
             .style("filter", "url(#africa-bloom)")
             .style("pointer-events", "auto")
             .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
