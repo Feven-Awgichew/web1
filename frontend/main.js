@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Dynamic Impact Stats Fetch
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const BACKEND_URL = 'https://web-6xnp.onrender.com';
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
         const response = await fetch(`${BACKEND_URL}/api/stats/summary`);
         if (response.ok) {
             const data = await response.json();
