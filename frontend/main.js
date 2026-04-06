@@ -64,42 +64,41 @@ const initAfricaMap = async () => {
         const anchors = africaCountries.map(d => projection(d3.geoCentroid(d)));
         
         // Generate ~350 nodes clustered around actual countries for a tight, detailed fit
-        for(let i=0; i<350; i++) {
+        for(let i=0; i<600; i++) { // Increased from 350
             const anchor = anchors[Math.floor(Math.random() * anchors.length)];
             stars.push({
-                x: anchor[0] + (Math.random() - 0.5) * 160,
-                y: anchor[1] + (Math.random() - 0.5) * 160,
-                brightness: 0.4 + Math.random() * 0.6
+                x: anchor[0] + (Math.random() - 0.5) * 180,
+                y: anchor[1] + (Math.random() - 0.5) * 180,
+                brightness: 0.5 + Math.random() * 0.5
             });
         }
 
         // 2. High-Density Complex Web Connections
-        const maxDist = 42;
+        const maxDist = 45;
         stars.forEach((s, i) => {
-            // Finding nearest neighbors manually for a clean triangular grid look
             const nearest = stars
                 .map((other, idx) => ({ idx, dist: Math.hypot(s.x-other.x, s.y-other.y) }))
                 .filter(n => n.idx !== i && n.dist < maxDist)
                 .sort((a,b) => a.dist - b.dist)
-                .slice(0, 4); // Connect each star to 4 others
+                .slice(0, 5); // Connect to more neighbors for a denser network
 
             nearest.forEach(n => {
                 networkGroup.append("line")
                     .attr("x1", s.x).attr("y1", s.y)
                     .attr("x2", stars[n.idx].x).attr("y2", stars[n.idx].y)
-                    .attr("stroke", "rgba(194, 153, 88, 0.45)") // Pure Bronze Gold
-                    .attr("stroke-width", n.dist < 15 ? 0.9 : 0.4)
+                    .attr("stroke", "rgba(224, 183, 118, 0.65)") // Higher opacity gold
+                    .attr("stroke-width", n.dist < 15 ? 1.2 : 0.6)
                     .style("filter", "url(#africa-bloom)");
             });
         });
 
         // 3. Shimmering Golden Stars (Nodes)
         networkGroup.selectAll(".star-node")
-            .data(stars.filter(() => Math.random() > 0.65)) // Only some stars are "Super-novas"
+            .data(stars.filter(() => Math.random() > 0.6)) // Increased from 0.65
             .enter()
             .append("circle")
             .attr("cx", d => d.x).attr("cy", d => d.y)
-            .attr("r", d => 0.8 + Math.random() * 1.5)
+            .attr("r", d => 1.2 + Math.random() * 2.0) // Increased size
             .attr("fill", "#ffffff") // Shining Ivory core
             .style("filter", "url(#africa-bloom)")
             .attr("opacity", d => d.brightness);
@@ -278,7 +277,7 @@ const fetchCountryStats = async (countryName, x, y) => {
 // Dynamic Impact Stats Fetch
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const BACKEND_URL = 'http://204.168.219.139:5005';
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
         const response = await fetch(`${BACKEND_URL}/api/stats/summary`);
         if (response.ok) {
             const data = await response.json();
@@ -486,7 +485,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     justify-content: center;
                 ">
                     ${profilePhoto ? `
-                        <img src="${profilePhoto.startsWith('/') ? 'http://204.168.219.139:5005' + profilePhoto : profilePhoto}" 
+                        <img src="${profilePhoto.startsWith('/') ? 'https://web-12h1.onrender.com' + profilePhoto : profilePhoto}" 
                              alt="${speaker.full_name}" 
                              onerror="this.style.setProperty('display', 'none', 'important'); this.nextElementSibling.style.setProperty('display', 'flex', 'important');"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
