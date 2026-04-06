@@ -47,7 +47,7 @@ const setupUI = () => {
 const handleLogout = async (e) => {
     if (e) e.preventDefault();
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'https://web-6xnp.onrender.com';
         await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
         localStorage.removeItem('admin_token'); // Cleanup legacy tokens
     } catch (err) {
@@ -65,7 +65,7 @@ const setupLogout = () => {
 
 // Protected Fetch
 const authFetch = async (url, options = {}) => {
-    const BACKEND_URL = 'https://web-12h1.onrender.com';
+    const BACKEND_URL = 'https://web-6xnp.onrender.com';
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
     options.credentials = 'include';
     
