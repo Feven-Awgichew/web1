@@ -369,6 +369,28 @@ header {
 
     .countdown-container {
         justify-content: center;
+        gap: 0.8rem;
+        padding: 1rem 0.5rem;
+    }
+
+    .countdown-unit span {
+        font-size: 1.8rem;
+    }
+
+    .countdown-unit {
+        min-width: 45px;
+    }
+
+    /* Further reduce orbit radius for mobile */
+    @keyframes orbit {
+        from { transform: rotate(0deg) translateX(125px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(125px) rotate(-360deg); }
+    }
+
+    .hero p.tagline {
+        letter-spacing: 4px !important;
+        font-size: 0.8rem !important;
+        margin-bottom: 0.5rem !important;
     }
 }
 
