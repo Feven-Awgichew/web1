@@ -107,6 +107,7 @@
                 max-width: 100% !important;
             }
             .hero h1 { font-size: 2.8rem !important; }
+            .header-main { padding: 4px 10px !important; }
         }
     </style>
 </head>
@@ -156,9 +157,16 @@
                     <svg id="africaSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"
                         style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2;">
                         <defs>
-                            <filter id="gold-glow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            <!-- Professional Bloom / Light Accumulation Filter -->
+                            <filter id="africa-bloom" x="-100%" y="-100%" width="300%" height="300%">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur5" />
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur10" />
+                                <feColorMatrix in="blur10" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="bloom" />
+                                <feMerge>
+                                    <feMergeNode in="bloom" />
+                                    <feMergeNode in="blur5" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
                             </filter>
                         </defs>
                         <!-- Dynamically populated via D3 in main.js -->
