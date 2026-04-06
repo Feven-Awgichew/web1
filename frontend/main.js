@@ -59,51 +59,53 @@ const initAfricaMap = async () => {
         // --- Final Extreme-Detail 'Neural Gold' Africa Map ---
         const networkGroup = svg.append("g").attr("class", "hero-network");
         
-        // 1. Precise Center-Anchored Node Generation
+        // 1. Ultra-High Density 'Neural Gold' Node Generation
         const stars = [];
         const anchors = africaCountries.map(d => projection(d3.geoCentroid(d)));
         
-        // Generate ~350 nodes clustered around actual countries for a tight, detailed fit
-        for(let i=0; i<600; i++) { // Increased from 350
+        // Increased to 900 nodes for the high-fidelity neural look in the reference image
+        for(let i=0; i<900; i++) {
             const anchor = anchors[Math.floor(Math.random() * anchors.length)];
             stars.push({
-                x: anchor[0] + (Math.random() - 0.5) * 180,
-                y: anchor[1] + (Math.random() - 0.5) * 180,
-                brightness: 0.5 + Math.random() * 0.5
+                x: anchor[0] + (Math.random() - 0.5) * 190,
+                y: anchor[1] + (Math.random() - 0.5) * 190,
+                brightness: 0.5 + Math.random() * 0.5,
+                pulseSpeed: 1.5 + Math.random() * 2
             });
         }
 
-        // 2. High-Density Complex Web Connections
-        const maxDist = 45;
+        // 2. Complex High-Octane Web Connections
+        // We use a tighter max distance but more connections to match the image's "electric" look
+        const maxDist = 48;
         stars.forEach((s, i) => {
             const nearest = stars
                 .map((other, idx) => ({ idx, dist: Math.hypot(s.x-other.x, s.y-other.y) }))
                 .filter(n => n.idx !== i && n.dist < maxDist)
                 .sort((a,b) => a.dist - b.dist)
-                .slice(0, 5); // Connect to more neighbors for a denser network
+                .slice(0, 6); // Denser connection grid
 
             nearest.forEach(n => {
                 networkGroup.append("line")
                     .attr("x1", s.x).attr("y1", s.y)
                     .attr("x2", stars[n.idx].x).attr("y2", stars[n.idx].y)
-                    .attr("stroke", "rgba(224, 183, 118, 0.65)") // Higher opacity gold
-                    .attr("stroke-width", n.dist < 15 ? 1.2 : 0.6)
+                    .attr("stroke", "rgba(255, 204, 0, 0.7)") // Vibrantly Radiant Gold
+                    .attr("stroke-width", n.dist < 15 ? 1.4 : 0.6)
                     .style("filter", "url(#africa-bloom)");
             });
         });
 
-        // 3. Shimmering Golden Stars (Nodes)
+        // 3. Shimmering Golden Stars (Nodes) - Intensive Glow Stage
         networkGroup.selectAll(".star-node")
-            .data(stars.filter(() => Math.random() > 0.6)) // Increased from 0.65
+            .data(stars.filter(() => Math.random() > 0.45)) // Higher density of super-novas
             .enter()
             .append("circle")
             .attr("cx", d => d.x).attr("cy", d => d.y)
-            .attr("r", d => 1.2 + Math.random() * 2.0) // Increased size
-            .attr("fill", "#ffffff") // Shining Ivory core
+            .attr("r", d => 1.0 + Math.random() * 2.2) // Larger core stars
+            .attr("fill", "#ffffff") // Brilliant White core for maximum glow contrast
             .style("filter", "url(#africa-bloom)")
             .attr("opacity", d => d.brightness);
 
-        // --- Elite Glowing African Borders ---
+        // --- Elite Glowing African Borders (Enhanced for Visibility) ---
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
@@ -111,9 +113,9 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(18, 14, 12, 0.5)") // Deep dark inner contrast
-            .attr("stroke", "#c29958") // Bold Golden Bronze
-            .attr("stroke-width", "1.8")
+            .attr("fill", "rgba(18, 14, 12, 0.6)") // Darker backdrop contrast
+            .attr("stroke", "#ffcc00") // Electric Vivid Gold
+            .attr("stroke-width", "2.2")
             .style("filter", "url(#africa-bloom)")
             .style("pointer-events", "auto")
             .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
