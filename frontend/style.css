@@ -335,6 +335,43 @@ header {
     max-width: 50%;
 }
 
+@media (max-width: 1024px) {
+    .hero {
+        height: auto;
+        min-height: 100vh;
+        padding: 120px 5% 60px 5%;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hero-content {
+        max-width: 100%;
+        order: 1;
+        margin-bottom: 40px;
+    }
+
+    .hero-visual {
+        position: relative;
+        right: auto;
+        top: auto;
+        width: 100%;
+        max-width: 500px;
+        height: 500px;
+        order: 2;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem !important;
+    }
+
+    .countdown-container {
+        justify-content: center;
+    }
+}
+
 .hero p.tagline {
     text-transform: uppercase;
     letter-spacing: 8px;
@@ -351,6 +388,7 @@ header {
     line-height: 0.85;
     margin-bottom: 2rem;
 }
+
 
 .hero h1 span {
     display: block;
@@ -1051,4 +1089,4 @@ header {
     max-width: 100%;
     height: auto;
     object-fit: contain;
-}
+}
