@@ -11,7 +11,7 @@ const data = {
     }
 };
 
-fetch('http://localhost:5000/api/register', {
+fetch('https://web-12h1.onrender.com/api/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
