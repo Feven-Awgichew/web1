@@ -4,7 +4,7 @@ let adminUser = null;
 
 const checkSession = async () => {
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'http://204.168.219.139:5005';
         const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (!response.ok) {
             window.location.href = 'login.html';
@@ -21,7 +21,7 @@ const checkSession = async () => {
 };
 
 const authFetch = async (url, options = {}) => {
-    const BACKEND_URL = 'https://web-12h1.onrender.com';
+    const BACKEND_URL = 'http://204.168.219.139:5005';
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
     options.credentials = 'include';
     
@@ -115,7 +115,7 @@ const setupUI = () => {
     const handleLogout = async (e) => {
         if (e) e.preventDefault();
         try {
-            const BACKEND_URL = 'https://web-12h1.onrender.com';
+            const BACKEND_URL = 'http://204.168.219.139:5005';
             await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
             localStorage.removeItem('admin_token'); // Cleanup legacy tokens
         } catch (err) {
