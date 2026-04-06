@@ -56,56 +56,55 @@ const initAfricaMap = async () => {
 
         const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
-        // --- High-Fidelity 'Radiant Network' (No detail left out) ---
-        const webLayer = svg.append("g").attr("class", "web-layer");
+        // --- Final Extreme-Detail 'Neural Gold' Africa Map ---
+        const networkGroup = svg.append("g").attr("class", "hero-network");
         
-        // 1. Generate precision-clipped random nodes (stars) across the continent
-        const internalNodes = [];
-        const bbox = [[200, 50], [680, 750]]; // Africa region zoom in SVG space
+        // 1. Precise Center-Anchored Node Generation
+        const stars = [];
+        const anchors = africaCountries.map(d => projection(d3.geoCentroid(d)));
         
-        // Use a list of actual centroids as anchors
-        const centroids = africaCountries.map(d => projection(d3.geoCentroid(d)));
-
-        // Supplement with ~250 random points localized toward landmass
-        // In a real pro map, we'd use Poisson-disc sampling, here we simulate by clustering
-        for(let i=0; i<250; i++) {
-            const seed = centroids[Math.floor(Math.random() * centroids.length)];
-            internalNodes.push({
-                x: seed[0] + (Math.random() - 0.5) * 180,
-                y: seed[1] + (Math.random() - 0.5) * 180
+        // Generate ~350 nodes clustered around actual countries for a tight, detailed fit
+        for(let i=0; i<350; i++) {
+            const anchor = anchors[Math.floor(Math.random() * anchors.length)];
+            stars.push({
+                x: anchor[0] + (Math.random() - 0.5) * 160,
+                y: anchor[1] + (Math.random() - 0.5) * 160,
+                brightness: 0.4 + Math.random() * 0.6
             });
         }
 
-        // 2. Intricate Triangulated Connections
-        const maxDist = 45;
-        internalNodes.forEach((p, i) => {
-            // Draw connections between nearby nodes
-            internalNodes.slice(i + 1, i + 15).forEach(other => {
-                const d = Math.hypot(p.x - other.x, p.y - other.y);
-                if (d < maxDist) {
-                    webLayer.append("line")
-                        .attr("x1", p.x).attr("y1", p.y)
-                        .attr("x2", other.x).attr("y2", other.y)
-                        .attr("stroke", "rgba(194, 153, 88, 0.3)")
-                        .attr("stroke-width", d < 20 ? "0.8" : "0.4")
-                        .attr("class", "web-line")
-                        .style("filter", "url(#africa-bloom)");
-                }
+        // 2. High-Density Complex Web Connections
+        const maxDist = 42;
+        stars.forEach((s, i) => {
+            // Finding nearest neighbors manually for a clean triangular grid look
+            const nearest = stars
+                .map((other, idx) => ({ idx, dist: Math.hypot(s.x-other.x, s.y-other.y) }))
+                .filter(n => n.idx !== i && n.dist < maxDist)
+                .sort((a,b) => a.dist - b.dist)
+                .slice(0, 4); // Connect each star to 4 others
+
+            nearest.forEach(n => {
+                networkGroup.append("line")
+                    .attr("x1", s.x).attr("y1", s.y)
+                    .attr("x2", stars[n.idx].x).attr("y2", stars[n.idx].y)
+                    .attr("stroke", "rgba(194, 153, 88, 0.45)") // Pure Bronze Gold
+                    .attr("stroke-width", n.dist < 15 ? 0.9 : 0.4)
+                    .style("filter", "url(#africa-bloom)");
             });
         });
 
-        // 3. Radiant Golden Nodes (Shining stars)
-        webLayer.selectAll(".web-node")
-            .data(internalNodes.filter(() => Math.random() > 0.6)) // Scatter shining nodes
+        // 3. Shimmering Golden Stars (Nodes)
+        networkGroup.selectAll(".star-node")
+            .data(stars.filter(() => Math.random() > 0.65)) // Only some stars are "Super-novas"
             .enter()
             .append("circle")
             .attr("cx", d => d.x).attr("cy", d => d.y)
-            .attr("r", d => 1 + Math.random() * 1.5)
-            .attr("fill", "#ffffff") // White-gold core
+            .attr("r", d => 0.8 + Math.random() * 1.5)
+            .attr("fill", "#ffffff") // Shining Ivory core
             .style("filter", "url(#africa-bloom)")
-            .attr("opacity", 0.9);
+            .attr("opacity", d => d.brightness);
 
-        // --- Elite Glowing Country Outlines ---
+        // --- Elite Glowing African Borders ---
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
@@ -113,35 +112,31 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(18, 14, 12, 0.4)") // Dark tint inside Countries
-            .attr("stroke", "#c29958") // Bold Gold Border
-            .attr("stroke-width", "1.6")
-            .style("filter", "url(#africa-bloom)") // Apply professional aura
+            .attr("fill", "rgba(18, 14, 12, 0.5)") // Deep dark inner contrast
+            .attr("stroke", "#c29958") // Bold Golden Bronze
+            .attr("stroke-width", "1.8")
+            .style("filter", "url(#africa-bloom)")
             .style("pointer-events", "auto")
-            .style("transition", "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)")
+            .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
             .on("mouseenter", function(event, d) {
                 const countryName = d.properties.name;
                 currentCountry = countryName;
-                
                 d3.select(this)
                     .attr("fill", "rgba(194, 153, 88, 0.25)")
-                    .attr("stroke", "#ffffff") 
-                    .attr("stroke-width", "3")
-                    .style("filter", "url(#africa-bloom) drop-shadow(0 0 20px #c29958)");
+                    .attr("stroke", "#ffffff")
+                    .attr("stroke-width", "3.5")
+                    .style("filter", "url(#africa-bloom) drop-shadow(0 0 25px rgba(194, 153, 88, 0.9))");
 
                 showLoadingTooltip(countryName, event.clientX, event.clientY);
-                
                 clearTimeout(fetchTimeout);
-                fetchTimeout = setTimeout(() => {
-                    fetchCountryStats(countryName, event.clientX, event.clientY);
-                }, 120);
+                fetchTimeout = setTimeout(() => fetchCountryStats(countryName, event.clientX, event.clientY), 120);
             })
             .on("mousemove", function(event) {
                 const tooltip = document.getElementById('map-tooltip');
                 if (tooltip.style.opacity === '1') {
-                    let left = event.clientX + 20;
-                    let top = event.clientY + 15;
-                    if (left + 290 > window.innerWidth) left = event.clientX - 295;
+                    let left = event.clientX + 25;
+                    let top = event.clientY + 20;
+                    if (left + 300 > window.innerWidth) left = event.clientX - 305;
                     if (top + 280 > window.innerHeight) top = event.clientY - 285;
                     tooltip.style.left = left + 'px';
                     tooltip.style.top = top + 'px';
@@ -151,11 +146,10 @@ const initAfricaMap = async () => {
                 currentCountry = null;
                 clearTimeout(fetchTimeout);
                 document.getElementById('map-tooltip').style.opacity = '0';
-
                 d3.select(this)
-                    .attr("fill", "rgba(18, 14, 12, 0.4)")
+                    .attr("fill", "rgba(18, 14, 12, 0.5)")
                     .attr("stroke", "#c29958")
-                    .attr("stroke-width", "1.6")
+                    .attr("stroke-width", "1.8")
                     .style("filter", "url(#africa-bloom)");
             });
 
