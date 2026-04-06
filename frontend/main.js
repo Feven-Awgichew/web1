@@ -69,7 +69,7 @@ const initAfricaMap = async () => {
                 .attr("data-country", d => d.properties.name)
                 .attr("fill", "rgba(8, 6, 4, 0.85)") // Even darker fill for punchier glow
                 .attr("stroke", "#ffae00") // Saturated Honey Gold
-                .attr("stroke-width", "3.0") // Bolder for more light bleed
+                .attr("stroke-width", "3.2") // Stronger base source
                 .style("filter", "url(#africa-bloom)")
                 .style("pointer-events", "auto")
                 .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
@@ -102,9 +102,9 @@ const initAfricaMap = async () => {
                 clearTimeout(fetchTimeout);
                 document.getElementById('map-tooltip').style.opacity = '0';
                 d3.select(this)
-                    .attr("fill", "rgba(18, 14, 12, 0.5)")
-                    .attr("stroke", "#c29958")
-                    .attr("stroke-width", "1.8")
+                    .attr("fill", "rgba(8, 6, 4, 0.85)") // Correct reset for "Max Glow"
+                    .attr("stroke", "#ffae00") // Correct reset Honey Gold
+                    .attr("stroke-width", "3.2")
                     .style("filter", "url(#africa-bloom)");
             });
 
