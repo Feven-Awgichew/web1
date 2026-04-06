@@ -74,10 +74,10 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(194, 153, 88, 0.08)") 
-            .attr("stroke", "#ffd700") // Very high-shine gold
+            .attr("fill", "rgba(194, 153, 88, 0.05)") 
+            .attr("stroke", "#c29958") // Deeper bronze-gold
             .attr("stroke-width", "1.5")
-            .style("filter", "url(#gold-glow)") // Apply the shiny bloom filter
+            .style("filter", "url(#gold-glow)")
             .style("pointer-events", "auto")
             .style("transition", "all 0.3s ease")
             .on("mouseenter", function(event, d) {
@@ -86,10 +86,10 @@ const initAfricaMap = async () => {
                 currentCountry = countryName;
                 
                 d3.select(this)
-                    .attr("fill", "rgba(255, 215, 0, 0.3)")
+                    .attr("fill", "rgba(194, 153, 88, 0.25)")
                     .attr("stroke", "#ffffff") 
                     .attr("stroke-width", "3")
-                    .style("filter", "url(#gold-glow) drop-shadow(0 0 15px #ffd700)");
+                    .style("filter", "url(#gold-glow) drop-shadow(0 0 15px #c29958)");
 
                 showLoadingTooltip(countryName, event.clientX, event.clientY);
                 
@@ -116,23 +116,11 @@ const initAfricaMap = async () => {
                 tooltip.style.opacity = '0';
 
                 d3.select(this)
-                    .attr("fill", "rgba(194, 153, 88, 0.08)")
-                    .attr("stroke", "#ffd700")
+                    .attr("fill", "rgba(194, 153, 88, 0.05)")
+                    .attr("stroke", "#c29958")
                     .attr("stroke-width", "1.5")
                     .style("filter", "url(#gold-glow)");
             });
-
-        // Add "Constellation" dots at centroid locations for extra shine
-        svg.selectAll(".map-dot")
-            .data(africaCountries)
-            .enter()
-            .append("circle")
-            .attr("cx", d => projection(d3.geoCentroid(d))[0])
-            .attr("cy", d => projection(d3.geoCentroid(d))[1])
-            .attr("r", 1.8)
-            .attr("fill", "#ffffff")
-            .attr("opacity", 0.7)
-            .style("filter", "url(#gold-glow)");
 
     } catch (err) {
         console.error("Map loading failed:", err);
