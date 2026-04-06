@@ -46,7 +46,7 @@ const setupUI = () => {
     const handleLogout = async (e) => {
         if (e) e.preventDefault();
         try {
-            const BACKEND_URL = 'https://web-6xnp.onrender.com';
+            const BACKEND_URL = 'https://web-12h1.onrender.com';
             await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
             localStorage.removeItem('admin_token'); // Cleanup legacy tokens
         } catch (err) {
