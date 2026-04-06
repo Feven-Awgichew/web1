@@ -59,20 +59,20 @@ const initAfricaMap = async () => {
 
         const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
-        // --- Elite Glowing African Borders (Re-tuned to warm Honey Gold) ---
+        // --- Elite Glowing African Borders (Max Glow Tuning) ---
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
             .append("path")
-            .attr("class", "map-region")
-            .attr("d", path)
-            .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(10, 8, 6, 0.8)") // Much darker, warmer fill
-            .attr("stroke", "#ffae00") // Warmer Honey Gold/Amber to match image
-            .attr("stroke-width", "2.6") // Slightly bolder border
-            .style("filter", "url(#africa-bloom)")
-            .style("pointer-events", "auto")
-            .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
+                .attr("class", "map-region")
+                .attr("d", path)
+                .attr("data-country", d => d.properties.name)
+                .attr("fill", "rgba(8, 6, 4, 0.85)") // Even darker fill for punchier glow
+                .attr("stroke", "#ffae00") // Saturated Honey Gold
+                .attr("stroke-width", "3.0") // Bolder for more light bleed
+                .style("filter", "url(#africa-bloom)")
+                .style("pointer-events", "auto")
+                .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
             .on("mouseenter", function(event, d) {
                 const countryName = d.properties.name;
                 currentCountry = countryName;
