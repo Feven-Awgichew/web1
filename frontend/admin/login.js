@@ -16,7 +16,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username, password }),
-            credentials: 'include' // Required for setting cookies
+            credentials: 'include', // Required for setting cookies
+            mode: 'cors'            // <-- Added this line
         });
 
         console.log(`[Login] Response status: ${response.status}`);
@@ -46,7 +47,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 (async () => {
     try {
         const BACKEND_URL = 'http://204.168.219.139:5005';
-        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
+            credentials: 'include',
+            mode: 'cors' // <-- Added this line
+        });
         if (response.ok) {
             window.location.href = 'dashboard.html';
         }
