@@ -396,12 +396,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     justify-content: center;
                 ">
                     ${profilePhoto ? `
-                        <img src="${profilePhoto.startsWith('/') ? 'https://web-12h1.onrender.com' + profilePhoto : profilePhoto}" 
+                        <img src="${profilePhoto}" 
                              alt="${speaker.full_name}" 
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                             onerror="this.style.setProperty('display', 'none', 'important'); this.nextElementSibling.style.setProperty('display', 'flex', 'important');"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
                         <div class="speaker-initial-circle" style="
-                            display: none;
+                            display: none !important;
                             width: 120px; 
                             height: 120px; 
                             background: linear-gradient(135deg, var(--primary), #8a6b3a);
