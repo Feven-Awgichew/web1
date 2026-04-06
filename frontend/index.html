@@ -160,14 +160,14 @@
                         style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2;">
                         <defs>
                             <!-- Professional Bloom / Light Accumulation Filter -->
-                            <filter id="africa-bloom" x="-200%" y="-200%" width="500%" height="500%">
+                            <filter id="africa-bloom" x="-300%" y="-300%" width="700%" height="700%">
                                 <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur4" />
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur10" />
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur22" />
-                                <feColorMatrix in="blur22" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 50 -12" result="bloom" />
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur12" />
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur35" />
+                                <feColorMatrix in="blur35" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 70 -15" result="bloom" />
                                 <feMerge>
                                     <feMergeNode in="bloom" />
-                                    <feMergeNode in="blur10" />
+                                    <feMergeNode in="blur12" />
                                     <feMergeNode in="blur4" />
                                     <feMergeNode in="SourceGraphic" />
                                 </feMerge>
