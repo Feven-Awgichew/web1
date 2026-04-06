@@ -1,12 +1,21 @@
-// Auth Check helper
+// Dynamic URL Discovery
+const getBackendURL = () => {
+    // If on numeric IP or domain on port 5274, assume backend is on port 5005
+    if (window.location.port === '5274') {
+        return `${window.location.protocol}//${window.location.hostname}:5005`;
+    }
+    return 'https://web-12h1.onrender.com';
+};
+
+const BACKEND_URL = getBackendURL();
+
 let role = null;
 let adminUser = null;
 
 const checkSession = async () => {
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
         const token = localStorage.getItem('admin_token');
-        console.log(`[Auth] Checking session. LocalToken found: ${!!token}`);
+        console.log(`[Auth] Checking session at ${BACKEND_URL}. LocalToken found: ${!!token}`);
         
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
@@ -31,7 +40,6 @@ const checkSession = async () => {
 };
 
 const authFetch = async (url, options = {}) => {
-    const BACKEND_URL = 'https://web-12h1.onrender.com';
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
     
     const token = localStorage.getItem('admin_token');
