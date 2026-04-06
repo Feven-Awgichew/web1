@@ -6,6 +6,8 @@ const checkSession = async () => {
     try {
         const BACKEND_URL = 'https://web-12h1.onrender.com';
         const token = localStorage.getItem('admin_token');
+        console.log(`[Auth] Checking session. LocalToken found: ${!!token}`);
+        
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
         const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
@@ -13,6 +15,7 @@ const checkSession = async () => {
             headers: headers
         });
         if (!response.ok) {
+            console.warn(`[Auth] Session check failed with status: ${response.status}`);
             window.location.href = 'login.html';
             return null;
         }
@@ -21,6 +24,7 @@ const checkSession = async () => {
         adminUser = admin.username;
         return admin;
     } catch (err) {
+        console.error('[Auth] Session check network error:', err);
         window.location.href = 'login.html';
         return null;
     }
@@ -124,24 +128,25 @@ const setupLogout = () => {
 const authFetch = async (url, options = {}) => {
     const BACKEND_URL = 'https://web-12h1.onrender.com';
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
-    console.log(`[Dashboard] Fetching: ${fullUrl}`);
-    options.credentials = 'include'; // Essential for cookies
     
     const token = localStorage.getItem('admin_token');
+    console.log(`[Auth] authFetch calling ${fullUrl}. LocalToken found: ${!!token}`);
+    
+    options.credentials = 'include';
     options.headers = {
         ...options.headers,
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
+    
     try {
         const response = await fetch(fullUrl, options);
-        console.log(`[Dashboard] Response from ${fullUrl}: ${response.status}`);
         if (response.status === 401) {
-            console.warn('[Dashboard] Unauthorized! Redirecting to login.');
+            console.warn(`[Auth] 401 Unauthorized from ${fullUrl}. Redirecting...`);
             window.location.href = 'login.html';
         }
         return response;
     } catch (err) {
-        console.error(`[Dashboard] Network error on ${fullUrl}:`, err);
+        console.error(`[Auth] Network error on ${fullUrl}:`, err);
         throw err;
     }
 };
