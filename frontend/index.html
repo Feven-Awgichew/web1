@@ -87,6 +87,27 @@
         }
         .speaker-name { font-family: 'Playfair Display', serif !important; color: #fff !important; font-size: 1.5rem !important; margin-bottom: 8px !important; }
         .speaker-role-tag { color: var(--primary) !important; font-size: 0.85rem !important; text-transform: uppercase !important; letter-spacing: 2px !important; font-weight: 800 !important; }
+        
+        @media (max-width: 850px) {
+            .speaker-card {
+                flex: 0 0 calc(50% - 20px) !important;
+                min-width: calc(50% - 20px) !important;
+                max-width: calc(50% - 20px) !important;
+            }
+            .header-main {
+                flex-wrap: wrap;
+                justify-content: center !important;
+                gap: 15px !important;
+            }
+        }
+        @media (max-width: 500px) {
+            .speaker-card {
+                flex: 0 0 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+            }
+            .hero h1 { font-size: 2.8rem !important; }
+        }
     </style>
 </head>
 
