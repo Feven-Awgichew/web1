@@ -159,11 +159,13 @@
                         <defs>
                             <!-- Professional Bloom / Light Accumulation Filter -->
                             <filter id="africa-bloom" x="-100%" y="-100%" width="300%" height="300%">
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur5" />
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur10" />
-                                <feColorMatrix in="blur10" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="bloom" />
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur5" />
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur10" />
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur20" />
+                                <feColorMatrix in="blur20" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -8" result="bloom" />
                                 <feMerge>
                                     <feMergeNode in="bloom" />
+                                    <feMergeNode in="blur10" />
                                     <feMergeNode in="blur5" />
                                     <feMergeNode in="SourceGraphic" />
                                 </feMerge>
