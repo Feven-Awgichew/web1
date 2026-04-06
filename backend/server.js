@@ -273,32 +273,42 @@ const checkPasswordReuse = async (adminId, newPassword) => {
 };
 
 const authenticateAdmin = (req, res, next) => {
-    // Prefer token from cookie, fall back to Authorization header
-    let token = req.cookies?.admin_token;
-    let authSource = 'Cookie';
-    
-    const authHeader = req.headers.authorization || req.headers['Authorization'];
-    if (authHeader) console.log(`[Auth] Received Auth Header: ${authHeader.substring(0, 15)}...`);
-    if (!token && authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
-        token = authHeader.substring(7).trim();
-        authSource = 'Header';
+    let cookieToken = req.cookies?.admin_token;
+    let authHeader = req.headers.authorization || req.headers['Authorization'];
+    let headerToken = null;
+
+    if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
+        headerToken = authHeader.substring(7).trim();
     }
 
-    if (!token) {
-        console.warn(`[Auth] Authentication failed: Missing token in ${req.url}`);
-        console.log(`[Auth] Headers received: ${JSON.stringify(req.headers)}`);
-        return res.status(401).json({ error: 'Unauthorized: Missing token' });
+    // Try verifying header first (explicit tokens are usually more reliable)
+    if (headerToken) {
+        try {
+            req.admin = jwt.verify(headerToken, JWT_SECRET);
+            console.log(`[Auth] Success via Header for ${req.admin.username}`);
+            return next();
+        } catch (err) {
+            console.warn(`[Auth] Header verification failed: ${err.message}`);
+        }
     }
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.admin = decoded;
-        console.log(`[Auth] Success via ${authSource} for ${decoded.username}`);
-        next();
-    } catch (err) {
-        console.error(`[Auth] Token verification failed via ${authSource}: ${err.message}`);
-        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    // Try cookie if header missing or verification failed
+    if (cookieToken) {
+        try {
+            req.admin = jwt.verify(cookieToken, JWT_SECRET);
+            console.log(`[Auth] Success via Cookie for ${req.admin.username}`);
+            return next();
+        } catch (err) {
+            console.warn(`[Auth] Cookie verification failed: ${err.message}`);
+        }
     }
+
+    // If both failed, then 401
+    console.warn(`[Auth] Authentication failed: No valid token found for ${req.url}`);
+    if (!cookieToken && !headerToken) {
+        console.log(`[Auth] No tokens provided. Headers: ${JSON.stringify(req.headers)}`);
+    }
+    return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
 };
 
 const requireSuperadmin = (req, res, next) => {
