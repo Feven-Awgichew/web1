@@ -1,3 +1,14 @@
+// Dynamic URL Discovery
+const getBackendURL = () => {
+    // If on numeric IP or domain on port 5274, assume backend is on port 5005
+    if (window.location.port === '5274') {
+        return `${window.location.protocol}//${window.location.hostname}:5005`;
+    }
+    return 'https://web-12h1.onrender.com';
+};
+
+const BACKEND_URL = getBackendURL();
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -8,8 +19,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     errorDiv.style.display = 'none';
 
     try {
-        console.log(`[Login] Attempting sign-in for: ${username}`);
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        console.log(`[Login] Attempting sign-in for: ${username} via ${BACKEND_URL}`);
         const response = await fetch(`${BACKEND_URL}/api/admin/login`, {
             method: 'POST',
             headers: {
