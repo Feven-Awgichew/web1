@@ -274,22 +274,28 @@ const checkPasswordReuse = async (adminId, newPassword) => {
 
 const authenticateAdmin = (req, res, next) => {
     // Prefer token from cookie, fall back to Authorization header
-    let token = req.cookies.admin_token;
+    let token = req.cookies?.admin_token;
+    let authSource = 'Cookie';
     
-    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-        token = req.headers.authorization.split(' ')[1];
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    if (!token && authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
+        token = authHeader.substring(7).trim();
+        authSource = 'Header';
     }
 
     if (!token) {
+        console.warn(`[Auth] Authentication failed: Missing token in ${req.url}`);
+        console.log(`[Auth] Headers received: ${JSON.stringify(req.headers)}`);
         return res.status(401).json({ error: 'Unauthorized: Missing token' });
     }
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.admin = decoded;
+        console.log(`[Auth] Success via ${authSource} for ${decoded.username}`);
         next();
     } catch (err) {
-        console.error(`[Auth] Token verification failed: ${err.message}`);
+        console.error(`[Auth] Token verification failed via ${authSource}: ${err.message}`);
         return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 };
@@ -318,9 +324,9 @@ app.post('/api/admin/login', async (req, res) => {
         
         res.cookie('admin_token', token, {
             httpOnly: true,
-            secure: true, // Required for SameSite=None
-            sameSite: 'none', 
-            maxAge: 24 * 60 * 60 * 1000 // Increase to 24h for convenience
+            secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+            sameSite: req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'none' : 'lax', 
+            maxAge: 24 * 60 * 60 * 1000 
         });
 
         res.json({ role: admin.role, username: admin.username, token });
