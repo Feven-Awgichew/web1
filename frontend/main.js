@@ -56,17 +56,44 @@ const initAfricaMap = async () => {
 
         const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
-        // Draw the Professional Mesh (clean background network)
-        const mesh = topojson.mesh(world, world.objects.countries, (a, b) => a !== b && (africaCodes.has(parseInt(a.id)) || africaCodes.has(parseInt(b.id))));
+        // --- The Golden Web Effect ('Neural Network' look) ---
+        const webLayer = svg.append("g").attr("class", "web-layer");
         
-        svg.append("path")
-            .datum(mesh)
-            .attr("d", path)
-            .attr("fill", "none")
-            .attr("stroke", "rgba(194, 153, 88, 0.15)")
-            .attr("stroke-width", "0.6");
+        // 1. Get centroids as base nodes for the web
+        const nodes = africaCountries.map(d => {
+            const centroid = projection(d3.geoCentroid(d));
+            return { x: centroid[0], y: centroid[1] };
+        });
 
-        // The Main Professional Glowing Borders
+        // 2. Connect each centroid to its nearest neighbors to form the web
+        nodes.forEach((node, i) => {
+            const nearest = nodes
+                .map((other, j) => ({ index: j, dist: Math.hypot(node.x - other.x, node.y - other.y) }))
+                .filter(n => n.index !== i)
+                .sort((a, b) => a.dist - b.dist)
+                .slice(0, 3); // Connect each node to its 3 closest neighbors
+
+            nearest.forEach(n => {
+                webLayer.append("line")
+                    .attr("x1", node.x).attr("y1", node.y)
+                    .attr("x2", nodes[n.index].x).attr("y2", nodes[n.index].y)
+                    .attr("stroke", "rgba(194, 153, 88, 0.25)") // Golden Web color
+                    .attr("stroke-width", "0.6")
+                    .style("filter", "url(#gold-glow)");
+            });
+        });
+
+        // 3. Add Golden Nodes (Web Junctions)
+        webLayer.selectAll(".web-node")
+            .data(nodes)
+            .enter()
+            .append("circle")
+            .attr("cx", d => d.x).attr("cy", d => d.y)
+            .attr("r", 1.5)
+            .attr("fill", "#c29958") // Golden Bronze
+            .style("filter", "url(#gold-glow)");
+
+        // --- The Main Precise Glowing Borders ---
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
@@ -75,7 +102,7 @@ const initAfricaMap = async () => {
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
             .attr("fill", "rgba(194, 153, 88, 0.05)") 
-            .attr("stroke", "#c29958") // Deeper bronze-gold
+            .attr("stroke", "#c29958") // Rich Golden Bronze
             .attr("stroke-width", "1.5")
             .style("filter", "url(#gold-glow)")
             .style("pointer-events", "auto")
