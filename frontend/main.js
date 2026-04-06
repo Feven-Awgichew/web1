@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     justify-content: center;
                 ">
                     ${profilePhoto ? `
-                        <img src="${profilePhoto}" 
+                        <img src="${profilePhoto.startsWith('/') ? 'https://web-12h1.onrender.com' + profilePhoto : profilePhoto}" 
                              alt="${speaker.full_name}" 
                              onerror="this.style.setProperty('display', 'none', 'important'); this.nextElementSibling.style.setProperty('display', 'flex', 'important');"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
