@@ -256,9 +256,12 @@ header {
 .hero-visual {
     position: absolute;
     right: 5%;
-    top: 15%;
-    width: 600px;
-    height: 600px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40vw;
+    height: 40vw;
+    max-width: 600px;
+    max-height: 600px;
     z-index: 1;
     mix-blend-mode: screen;
 }
@@ -477,11 +480,56 @@ header {
 
 @keyframes orbit {
     from {
-        transform: rotate(0deg) translateX(275px) rotate(0deg);
+        transform: rotate(0deg) translateX(320px) rotate(0deg);
     }
 
     to {
-        transform: rotate(360deg) translateX(275px) rotate(-360deg);
+        transform: rotate(360deg) translateX(320px) rotate(-360deg);
+    }
+}
+
+/* Responsiveness for Orbiters */
+@media (max-width: 1400px) {
+    @keyframes orbit {
+        from { transform: rotate(0deg) translateX(260px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(260px) rotate(-360deg); }
+    }
+}
+
+@media (max-width: 1100px) {
+    .orbital-icon {
+        width: 36px;
+        height: 36px;
+    }
+    @keyframes orbit {
+        from { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+    }
+}
+
+@media (max-width: 900px) {
+    .hero-visual {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: auto;
+        min-height: 400px;
+        margin-top: 50px;
+    }
+    .hero {
+        height: auto;
+        padding: 150px 10% 80px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .hero-content {
+        max-width: 100%;
+    }
+    .orbital-icon {
+        display: none; /* Hide orbiters on mobile/tablet for clean layout */
     }
 }
 
