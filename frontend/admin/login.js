@@ -58,15 +58,21 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Check if already logged in (using /api/admin/me instead of localStorage)
+// Check if already logged in
 (async () => {
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
-        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
+        const token = localStorage.getItem('admin_token');
+        if (!token) return; // Don't even try if no local token
+
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
+            credentials: 'include',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (response.ok) {
+            console.log('[Login] Active session found. Redirecting to dashboard...');
             window.location.href = 'dashboard.html';
         }
     } catch (err) {
-        console.log('[Login] No active session found.');
+        console.log('[Login] No active session found or server unreachable.');
     }
 })();
