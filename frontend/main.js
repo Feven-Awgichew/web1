@@ -56,54 +56,17 @@ const initAfricaMap = async () => {
 
         const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
-        // Create a separate group for the network layer
-        const networkLayer = svg.append("g").attr("class", "network-layer");
-
-        // --- Intricate Internal Network (The 'Complex Shiny' Look) ---
-        // 1. Generate random points within the map area
-        const points = [];
-        const numPoints = 250;
-        const bbox = [[200, 100], [650, 750]]; // Africa region in SVG coords
+        // Draw the Professional Mesh (clean background network)
+        const mesh = topojson.mesh(world, world.objects.countries, (a, b) => a !== b && (africaCodes.has(parseInt(a.id)) || africaCodes.has(parseInt(b.id))));
         
-        while(points.length < numPoints) {
-            const px = Math.random() * (bbox[1][0] - bbox[0][0]) + bbox[0][0];
-            const py = Math.random() * (bbox[1][1] - bbox[0][1]) + bbox[0][1];
-            
-            // Check if point is inside any African country (approximate check)
-            // For efficiency, we use D3's geoContains if it's world coords, but here we work in SVG space.
-            // Simplified: only add if close to a country centroid (this makes it clustered but complex)
-            points.push({x: px, y: py});
-        }
+        svg.append("path")
+            .datum(mesh)
+            .attr("d", path)
+            .attr("fill", "none")
+            .attr("stroke", "rgba(194, 153, 88, 0.15)")
+            .attr("stroke-width", "0.6");
 
-        // 2. Draw Connections (The web)
-        const maxDist = 35;
-        points.forEach((p, i) => {
-            points.slice(i + 1).forEach(other => {
-                const d = Math.hypot(p.x - other.x, p.y - other.y);
-                if (d < maxDist) {
-                    networkLayer.append("line")
-                        .attr("x1", p.x).attr("y1", p.y)
-                        .attr("x2", other.x).attr("y2", other.y)
-                        .attr("stroke", "rgba(194, 153, 88, 0.4)")
-                        .attr("stroke-width", "0.4")
-                        .attr("class", "mesh-line")
-                        .style("filter", "none");
-                }
-            });
-        });
-
-        // 3. Add Golden Shine Dots (Stars)
-        networkLayer.selectAll(".shine-dot")
-            .data(points.filter(() => Math.random() > 0.7)) // Only some points are "shining stars"
-            .enter()
-            .append("circle")
-            .attr("cx", d => d.x).attr("cy", d => d.y)
-            .attr("r", 1.2)
-            .attr("fill", "#ffffff")
-            .attr("class", "shiny-dot")
-            .style("filter", "url(#shiny-bloom)");
-
-        // --- Precise Country Borders ---
+        // The Main Professional Glowing Borders
         svg.selectAll(".map-region")
             .data(africaCountries)
             .enter()
@@ -111,20 +74,22 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(13, 10, 8, 0.2)") 
-            .attr("stroke", "rgba(255, 215, 0, 0.95)") // Extra bright gold
-            .attr("stroke-width", "1.3")
-            .style("filter", "url(#shiny-bloom)") // Apply high-shine bloom
+            .attr("fill", "rgba(194, 153, 88, 0.05)") 
+            .attr("stroke", "#c29958") // Deeper bronze-gold
+            .attr("stroke-width", "1.5")
+            .style("filter", "url(#gold-glow)")
             .style("pointer-events", "auto")
-            .style("transition", "all 0.4s ease")
+            .style("transition", "all 0.3s ease")
             .on("mouseenter", function(event, d) {
                 const countryName = d.properties.name;
+                const tooltip = document.getElementById('map-tooltip');
                 currentCountry = countryName;
                 
                 d3.select(this)
-                    .attr("fill", "rgba(194, 153, 88, 0.15)")
-                    .attr("stroke-width", "3.5")
-                    .style("filter", "url(#soft-glow) drop-shadow(0 0 15px #ffd700)");
+                    .attr("fill", "rgba(194, 153, 88, 0.3)")
+                    .attr("stroke", "#ffffff") 
+                    .attr("stroke-width", "2.5")
+                    .style("filter", "url(#gold-glow) drop-shadow(0 0 15px #c29958)");
 
                 showLoadingTooltip(countryName, event.clientX, event.clientY);
                 
@@ -145,14 +110,16 @@ const initAfricaMap = async () => {
                 }
             })
             .on("mouseleave", function() {
+                const tooltip = document.getElementById('map-tooltip');
                 currentCountry = null;
                 clearTimeout(fetchTimeout);
-                document.getElementById('map-tooltip').style.opacity = '0';
+                tooltip.style.opacity = '0';
 
                 d3.select(this)
-                    .attr("fill", "rgba(13, 10, 8, 0.2)")
-                    .attr("stroke-width", "1.3")
-                    .style("filter", "url(#shiny-bloom)");
+                    .attr("fill", "rgba(194, 153, 88, 0.05)")
+                    .attr("stroke", "#c29958")
+                    .attr("stroke-width", "1.5")
+                    .style("filter", "url(#gold-glow)");
             });
 
     } catch (err) {
