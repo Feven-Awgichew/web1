@@ -12,7 +12,7 @@ async function testUpload() {
     form.append('image', fs.createReadStream(path.join(__dirname, 'test_upload_image.png')));
 
     try {
-        const response = await axios.post('http://localhost:5000/api/admin/news', form, {
+        const response = await axios.post('https://web-12h1.onrender.com/api/admin/news', form, {
             headers: form.getHeaders(),
         });
         console.log('Upload Result Status:', response.status);
