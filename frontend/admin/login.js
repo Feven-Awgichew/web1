@@ -9,15 +9,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     try {
         console.log(`[Login] Attempting sign-in for: ${username}`);
-        const BACKEND_URL = 'http://204.168.219.139:5005';
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
         const response = await fetch(`${BACKEND_URL}/api/admin/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username, password }),
-            credentials: 'include', // Required for setting cookies
-            mode: 'cors'            // <-- Added this line
+            credentials: 'include' // Required for setting cookies
         });
 
         console.log(`[Login] Response status: ${response.status}`);
@@ -26,7 +25,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             const data = await response.json();
             console.log('[Login] Successful. Storing session info and redirecting...');
 
-            // Session is securely managed entirely by HttpOnly cookies
+            // Storing token in localStorage as a fallback for the cookie session
+            if (data.token) {
+                localStorage.setItem('admin_token', data.token);
+                console.log('[Login] Token saved to localStorage');
+            } else {
+                console.warn('[Login] No token received in JSON response');
+            }
             
             // Redirect to dashboard
             window.location.href = 'dashboard.html';
@@ -46,11 +51,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 // Check if already logged in (using /api/admin/me instead of localStorage)
 (async () => {
     try {
-        const BACKEND_URL = 'http://204.168.219.139:5005';
-        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { 
-            credentials: 'include',
-            mode: 'cors' // <-- Added this line
-        });
+        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (response.ok) {
             window.location.href = 'dashboard.html';
         }
