@@ -396,9 +396,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                     justify-content: center;
                 ">
                     ${profilePhoto ? `
-                        <img src="${profilePhoto}" 
+                        <img src="${profilePhoto.startsWith('/') ? 'https://web-12h1.onrender.com' + profilePhoto : profilePhoto}" 
                              alt="${speaker.full_name}" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        <div class="speaker-initial-circle" style="
+                            display: none;
+                            width: 120px; 
+                            height: 120px; 
+                            background: linear-gradient(135deg, var(--primary), #8a6b3a);
+                            color: #000;
+                            border-radius: 50%;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 3.5rem;
+                            font-weight: 900;
+                            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                        ">${initials}</div>
                     ` : `
                         <div class="speaker-initial-circle" style="
                             width: 120px; 
