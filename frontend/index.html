@@ -7,6 +7,9 @@
     <title>ASMIS | Influence for a Better Africa!</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- D3.js and TopoJSON for Interactive Africa Map -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
     <style>
         /* Robust Carousel Fixes */
         .speakers-carousel-wrapper {
@@ -132,8 +135,7 @@
 
                     <svg id="africaSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"
                         style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2;">
-
-                        <!-- Dynamically populated via D3 for precision -->
+                        <!-- Dynamically populated via D3 in main.js -->
                     </svg>
                 </div>
                 <!-- Social Icons inside the hero visual area to match mockup orbit -->
