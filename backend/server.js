@@ -41,14 +41,29 @@ const certificates = (fs.existsSync(certFile) && fs.existsSync(keyFile)) ? {
     key: fs.readFileSync(keyFile)
 } : null;
 
-app.use(cors({
-    origin: true, // Specifically reflects the requested origin instead of evaluating to a wildcard '*'
-    credentials: true
-}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Improved CORS for flexibility
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        callback(null, origin);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Request Logger with Cookie inspection
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} [${req.method}] ${req.url}`);
+    if (req.cookies) {
+        console.log(`[Cookies] ${Object.keys(req.cookies).join(', ') || 'None'}`);
+    }
+    next();
+});
 
 // Multer Storage Configuration
 const storage = multer.diskStorage({
@@ -70,9 +85,10 @@ initDb();
 // Email Configuration
 // Email Configuration
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: '74.125.136.108', // Force Google IPv4 address for smtp.gmail.com
     port: 587,
-    secure: false, // Use STARTTLS
+    secure: false, 
+    connectionTimeout: 10000, // Wait 10s for connection
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -298,11 +314,13 @@ app.post('/api/admin/login', async (req, res) => {
         const token = jwt.sign({ id: admin.id, username: admin.username, role: admin.role }, JWT_SECRET, { expiresIn: '15m' });
         
         // Set Secure, HttpOnly Cookie with 15-minute expiration
+        const isProduction = process.env.NODE_ENV === 'production';
+        
         res.cookie('admin_token', token, {
             httpOnly: true,
-            secure: true, // Only sent over HTTPS
-            sameSite: 'none', // Allow cross-domain for Render deployment
-            maxAge: 15 * 60 * 1000 // 15 minutes
+            secure: true, // Required for SameSite=None
+            sameSite: 'none', 
+            maxAge: 24 * 60 * 60 * 1000 // Increase to 24h for convenience
         });
 
         res.json({ role: admin.role, username: admin.username, token });
@@ -313,7 +331,11 @@ app.post('/api/admin/login', async (req, res) => {
 });
 
 app.post('/api/admin/logout', (req, res) => {
-    res.clearCookie('admin_token', { sameSite: 'none', secure: true });
+    res.clearCookie('admin_token', { 
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+    });
     res.json({ success: true });
 });
 
