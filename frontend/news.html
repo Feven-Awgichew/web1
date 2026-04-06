@@ -144,7 +144,10 @@
 
                 grid.innerHTML = news.map(item => `
                     <article class="news-card">
-                        ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="width: 100%; height: 200px; border-radius: 8px 8px 0 0; object-fit: cover;"/>` : '<div class="news-img" style="height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: #1a1410;">🚀</div>'}
+                        ${item.image_url ? `
+                            <img src="${item.image_url}" alt="${item.title}" style="width: 100%; height: 200px; border-radius: 8px 8px 0 0; object-fit: cover;" onerror="this.style.setProperty('display', 'none', 'important'); this.nextElementSibling.style.setProperty('display', 'flex', 'important');"/>
+                            <div class="news-img fallback-img" style="display: none !important; height: 200px; border-radius: 8px 8px 0 0; flex-direction: column; align-items: center; justify-content: center; font-size: 3rem; background: #1a1410;">📰</div>
+                        ` : '<div class="news-img" style="height: 200px; display: flex; border-radius: 8px 8px 0 0; align-items: center; justify-content: center; font-size: 3rem; background: #1a1410;">📰</div>'}
                         <div class="news-content">
                             <span class="news-date">${new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })}</span>
                             <h3>${item.title}</h3>
