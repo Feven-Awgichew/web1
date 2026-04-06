@@ -329,69 +329,11 @@ header {
     font-weight: bold;
 }
 
+
 .hero-content {
     position: relative;
     z-index: 10;
     max-width: 50%;
-}
-
-@media (max-width: 1024px) {
-    .hero {
-        height: auto;
-        min-height: 100vh;
-        padding: 120px 5% 60px 5%;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        text-align: center;
-    }
-
-    .hero-content {
-        max-width: 100%;
-        order: 1;
-        margin-bottom: 40px;
-    }
-
-    .hero-visual {
-        position: relative;
-        right: auto;
-        top: auto;
-        width: 100%;
-        max-width: 500px;
-        height: 500px;
-        order: 2;
-        margin: 0 auto;
-    }
-
-    .hero h1 {
-        font-size: 3.5rem !important;
-    }
-
-    .countdown-container {
-        justify-content: center;
-        gap: 0.8rem;
-        padding: 1rem 0.5rem;
-    }
-
-    .countdown-unit span {
-        font-size: 1.8rem;
-    }
-
-    .countdown-unit {
-        min-width: 45px;
-    }
-
-    /* Further reduce orbit radius for mobile */
-    @keyframes orbit {
-        from { transform: rotate(0deg) translateX(125px) rotate(0deg); }
-        to { transform: rotate(360deg) translateX(125px) rotate(-360deg); }
-    }
-
-    .hero p.tagline {
-        letter-spacing: 4px !important;
-        font-size: 0.8rem !important;
-        margin-bottom: 0.5rem !important;
-    }
 }
 
 .hero p.tagline {
@@ -1111,4 +1053,71 @@ header {
     max-width: 100%;
     height: auto;
     object-fit: contain;
+}
+
+@media (max-width: 1024px) {
+    .hero {
+        height: auto !important;
+        min-height: 100vh !important;
+        padding: 120px 5% 60px 5% !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .hero-content {
+        max-width: 100% !important;
+        order: 1 !important;
+        margin-bottom: 40px !important;
+    }
+
+    .hero-visual {
+        position: relative !important;
+        right: auto !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: 500px !important;
+        height: 500px !important;
+        order: 2 !important;
+        margin: 0 auto !important;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem !important;
+    }
+
+    .countdown-container {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 0.6rem !important;
+        padding: 1rem 0.2rem !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .countdown-unit span {
+        font-size: 1.6rem !important;
+    }
+
+    .countdown-unit {
+        min-width: 40px !important;
+    }
+
+    .countdown-sep {
+        font-size: 1.4rem !important;
+        padding-top: 2px !important;
+    }
+
+    /* Further reduce orbit radius for mobile */
+    @keyframes orbit {
+        from { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+    }
+
+    .hero p.tagline {
+        letter-spacing: 4px !important;
+        font-size: 0.8rem !important;
+        margin-bottom: 0.5rem !important;
+    }
 }
