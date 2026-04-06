@@ -278,7 +278,7 @@ const fetchCountryStats = async (countryName, x, y) => {
 // Dynamic Impact Stats Fetch
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'http://204.168.219.139:5005';
         const response = await fetch(`${BACKEND_URL}/api/stats/summary`);
         if (response.ok) {
             const data = await response.json();
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     justify-content: center;
                 ">
                     ${profilePhoto ? `
-                        <img src="${profilePhoto.startsWith('/') ? 'https://web-12h1.onrender.com' + profilePhoto : profilePhoto}" 
+                        <img src="${profilePhoto.startsWith('/') ? 'http://204.168.219.139:5005' + profilePhoto : profilePhoto}" 
                              alt="${speaker.full_name}" 
                              onerror="this.style.setProperty('display', 'none', 'important'); this.nextElementSibling.style.setProperty('display', 'flex', 'important');"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
