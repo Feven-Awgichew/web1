@@ -4,7 +4,7 @@ let adminUser = null;
 
 const checkSession = async () => {
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'https://web-6xnp.onrender.com';
         const response = await fetch(`${BACKEND_URL}/api/admin/me`, { credentials: 'include' });
         if (!response.ok) {
             window.location.href = 'login.html';
@@ -97,7 +97,7 @@ const initUI = () => {
 const handleLogout = async (e) => {
     if (e) e.preventDefault();
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'https://web-6xnp.onrender.com';
         await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
         localStorage.removeItem('admin_token'); // Cleanup any legacy tokens
     } catch (err) {
@@ -116,7 +116,7 @@ const setupLogout = () => {
 
 // Protected Fetch Helper
 const authFetch = async (url, options = {}) => {
-    const BACKEND_URL = 'https://web-12h1.onrender.com';
+    const BACKEND_URL = 'https://web-6xnp.onrender.com';
     const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
     console.log(`[Dashboard] Fetching: ${fullUrl}`);
     options.credentials = 'include'; // Essential for cookies
