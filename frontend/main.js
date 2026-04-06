@@ -46,13 +46,15 @@ const initAfricaMap = async () => {
         // Convert TopoJSON to GeoJSON and filter for African countries
         const countries = topojson.feature(world, world.objects.countries).features;
         
-        // Mapping of ISO numeric codes to names (approximate list for Africa)
-        // In a real app, you'd use a full lookup table
-        const africaCountries = countries.filter(d => {
-            // Very rough filter for Africa by bounding box for this demo
-            const centroid = d3.geoCentroid(d);
-            return centroid[0] > -20 && centroid[0] < 55 && centroid[1] > -40 && centroid[1] < 40;
-        });
+        // Official ISO Numeric codes for all African nations for precise filtering
+        const africaCodes = new Set([
+            12, 24, 72, 108, 120, 132, 140, 148, 174, 178, 180, 204, 226, 231, 232, 248, 262, 
+            266, 270, 288, 324, 384, 404, 426, 430, 434, 450, 454, 466, 478, 480, 504, 508, 
+            516, 548, 562, 566, 624, 638, 646, 678, 686, 690, 694, 706, 710, 728, 729, 732, 
+            748, 768, 788, 800, 818, 834, 854, 894
+        ]);
+
+        const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
 
         svg.selectAll(".map-region")
             .data(africaCountries)
@@ -61,14 +63,24 @@ const initAfricaMap = async () => {
             .attr("class", "map-region")
             .attr("d", path)
             .attr("data-country", d => d.properties.name)
-            .attr("fill", "rgba(194, 153, 88, 0.05)")
-            .attr("stroke", "rgba(194, 153, 88, 0.3)")
-            .attr("stroke-width", "1")
+            .attr("fill", "rgba(194, 153, 88, 0.15)") // Brighter gold tint
+            .attr("stroke", "#c29958") // Solid gold stroke
+            .attr("stroke-width", "1.5") // Bolder lines
+            .attr("stroke-linejoin", "round")
             .style("pointer-events", "auto")
+            .style("transition", "all 0.3s ease")
             .on("mouseenter", function(event, d) {
                 const countryName = d.properties.name;
                 const tooltip = document.getElementById('map-tooltip');
                 currentCountry = countryName;
+                
+                // Brighter Gold Highlight
+                d3.select(this)
+                    .attr("fill", "rgba(194, 153, 88, 0.4)")
+                    .attr("stroke", "#ffffff") // White/Gold glow
+                    .attr("stroke-width", "2.5")
+                    .style("filter", "drop-shadow(0 0 8px rgba(194, 153, 88, 0.6))");
+
                 showLoadingTooltip(countryName, event.clientX, event.clientY);
                 
                 clearTimeout(fetchTimeout);
@@ -92,6 +104,13 @@ const initAfricaMap = async () => {
                 currentCountry = null;
                 clearTimeout(fetchTimeout);
                 tooltip.style.opacity = '0';
+
+                // Revert to original gold style
+                d3.select(this)
+                    .attr("fill", "rgba(194, 153, 88, 0.15)")
+                    .attr("stroke", "#c29958")
+                    .attr("stroke-width", "1.5")
+                    .style("filter", "none");
             });
 
     } catch (err) {
