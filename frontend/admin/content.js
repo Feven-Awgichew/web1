@@ -4,7 +4,7 @@ const getBackendURL = () => {
     if (window.location.port === '5274') {
         return `${window.location.protocol}//${window.location.hostname}:5005`;
     }
-    return 'https://web-12h1.onrender.com';
+    return 'https://web1-6b9i.onrender.com';
 };
 
 const BACKEND_URL = getBackendURL();
@@ -191,7 +191,7 @@ const authFetch = async (url, options = {}) => {
     return response;
 };
 
-const API_BASE = 'https://web-12h1.onrender.com/api';
+const API_BASE = 'https://web1-6b9i.onrender.com/api';
 
 // Handle News Submission
 document.getElementById('newsForm').addEventListener('submit', async (e) => {
