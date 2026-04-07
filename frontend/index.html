@@ -7,8 +7,6 @@
     <title>ASMIS | Influence for a Better Africa!</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         /* Robust Carousel Fixes */
         .speakers-carousel-wrapper {
@@ -87,28 +85,6 @@
         }
         .speaker-name { font-family: 'Playfair Display', serif !important; color: #fff !important; font-size: 1.5rem !important; margin-bottom: 8px !important; }
         .speaker-role-tag { color: var(--primary) !important; font-size: 0.85rem !important; text-transform: uppercase !important; letter-spacing: 2px !important; font-weight: 800 !important; }
-        
-        @media (max-width: 850px) {
-            .speaker-card {
-                flex: 0 0 calc(50% - 20px) !important;
-                min-width: calc(50% - 20px) !important;
-                max-width: calc(50% - 20px) !important;
-            }
-            .header-main {
-                flex-wrap: wrap;
-                justify-content: center !important;
-                gap: 15px !important;
-            }
-        }
-        @media (max-width: 500px) {
-            .speaker-card {
-                flex: 0 0 100% !important;
-                min-width: 100% !important;
-                max-width: 100% !important;
-            }
-            .hero h1 { font-size: 2.8rem !important; }
-            .header-main { padding: 4px 10px !important; }
-        }
     </style>
 </head>
 
@@ -152,26 +128,77 @@
             <div class="hero-visual">
                 <!-- Interactive Africa Map Overlay -->
                 <div class="africa-map-container" style="width: 100%; height: 100%; position: relative;">
-                    <!-- Previous static background map removed for precision -->
+                    <div class="africa-map" style="z-index: 1;"></div>
 
                     <svg id="africaSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"
-                        style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2;">
-                        <defs>
-                            <!-- Professional Bloom / Light Accumulation Filter -->
-                            <filter id="africa-bloom" x="-300%" y="-300%" width="700%" height="700%">
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur4" />
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur12" />
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur35" />
-                                <feColorMatrix in="blur35" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 70 -15" result="bloom" />
-                                <feMerge>
-                                    <feMergeNode in="bloom" />
-                                    <feMergeNode in="blur12" />
-                                    <feMergeNode in="blur4" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <!-- Dynamically populated via D3 in main.js -->
+                        style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; pointer-events: none;">
+
+                        <!-- Completely invisible regions for tooltip-only interaction -->
+                        <path data-country="Senegal" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 230 300 L 320 250 L 320 300 Z" />
+                        <path data-country="Mali" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 120 380 L 160 300 L 320 300 L 320 380 Z" />
+                        <path data-country="Western Sahara" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 100 200 L 160 180 L 220 220 L 150 250 Z" />
+                        <path data-country="Algeria" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 280 150 L 440 150 L 440 320 L 280 320 Z" />
+                        <path data-country="Ghana" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 320 450 L 320 530 L 380 530 L 380 450 Z" />
+                        <path data-country="Egypt" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;"
+                            d="M 600 160 L 740 160 L 740 320 L 600 320 Z" />
+                        <path data-country="Ethiopia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 300 L 640 300 Q 660 350 640 450 L 550 450 Z" />
+                        <path data-country="Tanzania" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 450 L 640 450 L 600 550 L 550 550 Z" />
+                        <path data-country="Uganda" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 500 L 550 550 L 520 550 L 520 500 Z" />
+                        <path data-country="Rwanda" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 520 520 L 520 550 L 490 550 L 490 520 Z" />
+                        <path data-country="Nigeria" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 550 L 600 550 L 580 670 L 480 670 Z" />
+                        <path data-country="South Africa" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 670 L 580 670 Q 550 820 460 900 L 400 750 Z" />
+
+                        <!-- Additional Regions for Better Coverage -->
+                        <path data-country="Morocco" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 160 140 L 280 110 L 300 150 L 220 190 Z" />
+                        <path data-country="Tunisia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 440 120 L 480 120 L 480 180 L 440 180 Z" />
+                        <path data-country="Libya" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 150 L 600 150 L 600 320 L 480 320 Z" />
+                        <path data-country="Sudan" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 580 320 L 680 320 L 680 480 L 580 480 Z" />
+                        <path data-country="Somalia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 640 350 L 700 380 L 700 480 L 640 450 Z" />
+                        <path data-country="Kenya" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 580 450 L 640 450 L 640 500 L 580 500 Z" />
+                        <path data-country="DR Congo" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 420 450 L 550 450 L 550 580 L 420 580 Z" />
+                        <path data-country="Angola" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 400 580 L 480 580 L 480 670 L 400 670 Z" />
+                        <path data-country="Namibia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 400 670 L 480 670 L 480 750 L 400 750 Z" />
+                        <path data-country="Madagascar" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 650 650 L 700 650 L 700 750 L 650 750 Z" />
+                        <path data-country="Mauritania" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 120 250 L 200 200 L 300 250 L 200 350 Z" />
+                        <path data-country="Chad" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 380 350 L 450 350 L 450 450 L 380 450 Z" />
+                        <path data-country="Niger" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 300 300 L 380 300 L 380 380 L 300 380 Z" />
+                        <path data-country="Ivory Coast" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 250 450 L 320 450 L 320 500 L 250 500 Z" />
+                        <path data-country="Cameroon" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 380 450 L 420 450 L 420 530 L 380 530 Z" />
+                        <path data-country="Zambia" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 580 L 550 580 L 550 640 L 480 640 Z" />
+                        <path data-country="Zimbabwe" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 480 640 L 550 640 L 550 670 L 480 670 Z" />
+                        <path data-country="Botswana" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 450 670 L 500 670 L 500 730 L 450 730 Z" />
+                        <path data-country="Mozambique" class="map-region" fill="transparent" stroke="none"
+                            style="pointer-events: auto;" d="M 550 580 L 600 580 L 620 750 L 580 750 Z" />
                     </svg>
                 </div>
                 <!-- Social Icons inside the hero visual area to match mockup orbit -->
@@ -743,9 +770,6 @@
     </main>
 
     <div id="map-tooltip"></div>
-    <!-- D3.js for Interactive Africa Map -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
     <script type="module" src="main.js"></script>
 </body>
 
