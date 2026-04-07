@@ -4,7 +4,7 @@ const getBackendURL = () => {
     if (window.location.port === '5274') {
         return `${window.location.protocol}//${window.location.hostname}:5005`;
     }
-    return 'https://web-12h1.onrender.com';
+    return 'https://web1-6b9i.onrender.com';
 };
 
 const BACKEND_URL = getBackendURL();
@@ -66,7 +66,7 @@ const setupUI = () => {
 const handleLogout = async (e) => {
     if (e) e.preventDefault();
     try {
-        const BACKEND_URL = 'https://web-12h1.onrender.com';
+        const BACKEND_URL = 'https://web1-6b9i.onrender.com';
         await fetch(`${BACKEND_URL}/api/admin/logout`, { method: 'POST', credentials: 'include' });
         localStorage.removeItem('admin_token'); // Cleanup legacy tokens
     } catch (err) {
