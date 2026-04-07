@@ -25,99 +25,155 @@ const updateCountdown = () => {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// Dynamic Africa Map Renderer using D3.js
-const initAfricaMap = async () => {
-    const svg = d3.select("#africaSvg");
-    // Prevent stacking/duplicates by clearing existing elements
-    svg.selectAll("g, path, circle, line").remove();
-
-    const width = 800;
-    const height = 800;
-
-    // Use a high-quality projection centered on Africa
-    const projection = d3.geoMercator()
-        .center([20, 5])
-        .scale(420)
-        .translate([width / 2, height / 2]);
-
-    const path = d3.geoPath().projection(projection);
-
-    try {
-        const response = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-        const world = await response.json();
-        
-        // Convert TopoJSON to GeoJSON and filter for African countries
-        const countries = topojson.feature(world, world.objects.countries).features;
-        
-        // Official ISO Numeric codes for all African nations for precise filtering
-        const africaCodes = new Set([
-            12, 24, 72, 108, 120, 132, 140, 148, 174, 178, 180, 204, 226, 231, 232, 248, 262, 
-            266, 270, 288, 324, 384, 404, 426, 430, 434, 450, 454, 466, 478, 480, 504, 508, 
-            516, 548, 562, 566, 624, 638, 646, 678, 686, 690, 694, 706, 710, 728, 729, 732, 
-            548, 768, 788, 800, 818, 834, 854, 894
-        ]);
-
-        const africaCountries = countries.filter(d => africaCodes.has(parseInt(d.id)));
-
-        // --- Elite Glowing African Borders (Max Glow Tuning) ---
-        svg.selectAll(".map-region")
-            .data(africaCountries)
-            .enter()
-            .append("path")
-                .attr("class", "map-region")
-                .attr("d", path)
-                .attr("data-country", d => d.properties.name)
-                .attr("fill", "rgba(8, 6, 4, 0.85)") // Even darker fill for punchier glow
-                .attr("stroke", "#ffae00") // Saturated Honey Gold
-                .attr("stroke-width", "3.2") // Stronger base source
-                .style("filter", "url(#africa-bloom)")
-                .style("pointer-events", "auto")
-                .style("transition", "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)")
-            .on("mouseenter", function(event, d) {
-                const countryName = d.properties.name;
-                currentCountry = countryName;
-                d3.select(this)
-                    .attr("fill", "rgba(255, 174, 0, 0.35)") // Warmer golden hover fill
-                    .attr("stroke", "#ffffff")
-                    .attr("stroke-width", "3.5")
-                    .style("filter", "url(#africa-bloom) drop-shadow(0 0 25px rgba(255, 174, 0, 0.9))");
-
-                showLoadingTooltip(countryName, event.clientX, event.clientY);
-                clearTimeout(fetchTimeout);
-                fetchTimeout = setTimeout(() => fetchCountryStats(countryName, event.clientX, event.clientY), 120);
-            })
-            .on("mousemove", function(event) {
-                const tooltip = document.getElementById('map-tooltip');
-                if (tooltip.style.opacity === '1') {
-                    let left = event.clientX + 25;
-                    let top = event.clientY + 20;
-                    if (left + 300 > window.innerWidth) left = event.clientX - 305;
-                    if (top + 280 > window.innerHeight) top = event.clientY - 285;
-                    tooltip.style.left = left + 'px';
-                    tooltip.style.top = top + 'px';
-                }
-            })
-            .on("mouseleave", function() {
-                currentCountry = null;
-                clearTimeout(fetchTimeout);
-                document.getElementById('map-tooltip').style.opacity = '0';
-                d3.select(this)
-                    .attr("fill", "rgba(8, 6, 4, 0.85)") // Correct reset for "Max Glow"
-                    .attr("stroke", "#ffae00") // Correct reset Honey Gold
-                    .attr("stroke-width", "3.2")
-                    .style("filter", "url(#africa-bloom)");
-            });
-
-    } catch (err) {
-        console.error("Map loading failed:", err);
-    }
-};
-
+// Interactive SVG Map Logic — Real-Time DB Stats on Hover
 document.addEventListener('DOMContentLoaded', () => {
-    initAfricaMap();
-    
     const tooltip = document.getElementById('map-tooltip');
-    if (!tooltip) return;
+    const regions = document.querySelectorAll('.map-region');
+
+    if (!tooltip || regions.length === 0) return;
+
+    // Cache to avoid refetching the same country repeatedly
+    const cache = {};
+    let fetchTimeout = null;
+    let currentCountry = null;
+
+    // Show loading tooltip immediately
+    const showLoadingTooltip = (countryName, x, y) => {
+        tooltip.innerHTML = `
+            <div style="background: rgba(13,10,8,0.97); border: 1px solid rgba(194,153,88,0.5); padding: 16px 20px; border-radius: 12px; min-width: 210px; box-shadow: 0 15px 40px rgba(0,0,0,0.7);">
+                <h4 style="color: var(--primary); margin: 0 0 12px 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(194,153,88,0.2); padding-bottom: 8px;">
+                    ${countryName}
+                </h4>
+                <div style="display: flex; align-items: center; gap: 10px; color: #888; font-size: 0.8rem;">
+                    <span style="width: 16px; height: 16px; border: 2px solid var(--primary); border-top-color: transparent; border-radius: 50%; display: inline-block; animation: mapSpin 0.6s linear infinite;"></span>
+                    Loading live data...
+                </div>
+            </div>`;
+        tooltip.style.opacity = '1';
+        tooltip.style.left = (x + 15) + 'px';
+        tooltip.style.top = (y + 15) + 'px';
+    };
+
+    // Render full stats tooltip
+    const renderTooltip = (countryName, stats, x, y) => {
+        const hasData = stats.total > 0;
+
+        const statRow = (icon, label, value, color = '#ccc') => value > 0 ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; padding: 3px 0;">
+                <span style="color: #888;">${icon} ${label}</span>
+                <span style="font-weight: 700; color: ${color}; background: rgba(255,255,255,0.05); padding: 1px 7px; border-radius: 10px;">${value}</span>
+            </div>` : '';
+
+        // Progress bar for approved ratio
+        const approvedPct = hasData ? Math.round((stats.approved_count / stats.total) * 100) : 0;
+
+        tooltip.innerHTML = `
+            <div style="background: rgba(13,10,8,0.97); border: 1px solid rgba(194,153,88,0.4); padding: 16px 18px; border-radius: 12px; min-width: 220px; max-width: 280px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); backdrop-filter: blur(20px);">
+                <h4 style="color: var(--primary); margin: 0 0 4px 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;">${countryName}</h4>
+
+                ${hasData ? `
+                    <!-- Total badge -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(194,153,88,0.15); padding-bottom: 10px;">
+                        <span style="color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Total Registrations</span>
+                        <span style="font-size: 1.5rem; font-weight: 900; color: #fff; line-height: 1;">${stats.total}</span>
+                    </div>
+
+                    <!-- Role breakdown -->
+                    <div style="display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px;">
+                        ${statRow('📢', 'Influencers', stats.influencer_count, '#c29958')}
+                        ${statRow('📷', 'Media', stats.media_count, '#a0c4ff')}
+                        ${statRow('🎤', 'Speakers', stats.speaker_count, '#b8f5b8')}
+                        ${statRow('🤝', 'Partners', stats.partner_count, '#ffd6a5')}
+                        ${statRow('💎', 'Sponsors', stats.sponsor_count, '#caffbf')}
+                        ${statRow('🌍', 'Public Applicants', stats.public_count, '#bdb2ff')}
+                        ${statRow('👑', 'VIP / VVIP', stats.vip_count, '#ffadad')}
+                    </div>
+
+                    <!-- Approved / Pending bar -->
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 5px;">
+                            <span style="color: #4caf91;">✓ Approved: ${stats.approved_count}</span>
+                            <span style="color: #c29958;">⏳ Pending: ${stats.pending_count}</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.08); border-radius: 20px; height: 5px; overflow: hidden;">
+                            <div style="width: ${approvedPct}%; height: 100%; background: linear-gradient(90deg, #4caf91, #c29958); border-radius: 20px; transition: width 0.5s ease;"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.65rem; color: #555; margin-top: 3px;">${approvedPct}% approved</div>
+                    </div>
+                ` : `
+                    <div style="color: #555; font-size: 0.8rem; font-style: italic; margin-top: 8px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05);">
+                        No registrations from this country yet.
+                    </div>
+                `}
+            </div>`;
+
+        tooltip.style.opacity = '1';
+        tooltip.style.left = (x + 15) + 'px';
+        tooltip.style.top = (y + 15) + 'px';
+    };
+
+    // Fetch stats for one country (with cache)
+    const fetchCountryStats = async (countryName, x, y) => {
+        const key = countryName.toLowerCase().trim();
+
+        if (cache[key] !== undefined) {
+            renderTooltip(countryName, cache[key], x, y);
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/stats/countries?country=${encodeURIComponent(countryName)}`);
+            if (res.ok) {
+                const data = await res.json();
+                cache[key] = data;
+                // Only render if this country is still hovered
+                if (currentCountry === countryName) {
+                    renderTooltip(countryName, data, x, y);
+                }
+            }
+        } catch (err) {
+            console.warn(`Failed to fetch stats for ${countryName}:`, err);
+            cache[key] = { total: 0, influencer_count: 0, media_count: 0, speaker_count: 0, partner_count: 0, sponsor_count: 0, public_count: 0, vip_count: 0, approved_count: 0, pending_count: 0 };
+            if (currentCountry === countryName) {
+                renderTooltip(countryName, cache[key], x, y);
+            }
+        }
+    };
+
+    regions.forEach(region => {
+        region.addEventListener('mouseenter', (e) => {
+            const countryName = region.getAttribute('data-country');
+            currentCountry = countryName;
+
+            showLoadingTooltip(countryName, e.clientX, e.clientY);
+
+            // Slight debounce to prevent spam on quick mouse-over
+            clearTimeout(fetchTimeout);
+            fetchTimeout = setTimeout(() => {
+                fetchCountryStats(countryName, e.clientX, e.clientY);
+            }, 120);
+        });
+
+        region.addEventListener('mousemove', (e) => {
+            // Keep tooltip following cursor
+            if (tooltip.style.opacity === '1') {
+                let left = e.clientX + 20;
+                let top = e.clientY + 15;
+                // Prevent going off right edge
+                if (left + 290 > window.innerWidth) left = e.clientX - 295;
+                // Prevent going off bottom edge
+                if (top + 280 > window.innerHeight) top = e.clientY - 285;
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+            }
+        });
+
+        region.addEventListener('mouseleave', () => {
+            currentCountry = null;
+            clearTimeout(fetchTimeout);
+            tooltip.style.opacity = '0';
+        });
+    });
 
     // Add spin keyframe to page if not already present
     if (!document.getElementById('mapSpinStyle')) {
@@ -129,112 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Shared state for map tooltips
-const cache = {};
-let fetchTimeout = null;
-let currentCountry = null;
-
-// Show loading tooltip immediately
-const showLoadingTooltip = (countryName, x, y) => {
-    const tooltip = document.getElementById('map-tooltip');
-    tooltip.innerHTML = `
-        <div style="background: rgba(13,10,8,0.97); border: 1px solid rgba(194,153,88,0.5); padding: 16px 20px; border-radius: 12px; min-width: 210px; box-shadow: 0 15px 40px rgba(0,0,0,0.7);">
-            <h4 style="color: var(--primary); margin: 0 0 12px 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(194,153,88,0.2); padding-bottom: 8px;">
-                ${countryName}
-            </h4>
-            <div style="display: flex; align-items: center; gap: 10px; color: #888; font-size: 0.8rem;">
-                <span style="width: 16px; height: 16px; border: 2px solid var(--primary); border-top-color: transparent; border-radius: 50%; display: inline-block; animation: mapSpin 0.6s linear infinite;"></span>
-                Loading live data...
-            </div>
-        </div>`;
-    tooltip.style.opacity = '1';
-    tooltip.style.left = (x + 15) + 'px';
-    tooltip.style.top = (y + 15) + 'px';
-};
-
-// Render full stats tooltip
-const renderTooltip = (countryName, stats, x, y) => {
-    const tooltip = document.getElementById('map-tooltip');
-    const hasData = stats.total > 0;
-
-    const statRow = (icon, label, value, color = '#ccc') => value > 0 ? `
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; padding: 3px 0;">
-            <span style="color: #888;">${icon} ${label}</span>
-            <span style="font-weight: 700; color: ${color}; background: rgba(255,255,255,0.05); padding: 1px 7px; border-radius: 10px;">${value}</span>
-        </div>` : '';
-
-    const approvedPct = hasData ? Math.round((stats.approved_count / stats.total) * 100) : 0;
-
-    tooltip.innerHTML = `
-        <div style="background: rgba(13,10,8,0.97); border: 1px solid rgba(194,153,88,0.4); padding: 16px 18px; border-radius: 12px; min-width: 220px; max-width: 280px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); backdrop-filter: blur(20px);">
-            <h4 style="color: var(--primary); margin: 0 0 4px 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;">${countryName}</h4>
-            ${hasData ? `
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(194,153,88,0.15); padding-bottom: 10px;">
-                    <span style="color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Total Registrations</span>
-                    <span style="font-size: 1.5rem; font-weight: 900; color: #fff; line-height: 1;">${stats.total}</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px;">
-                    ${statRow('📢', 'Influencers', stats.influencer_count, '#c29958')}
-                    ${statRow('📷', 'Media', stats.media_count, '#a0c4ff')}
-                    ${statRow('🎤', 'Speakers', stats.speaker_count, '#b8f5b8')}
-                    ${statRow('🤝', 'Partners', stats.partner_count, '#ffd6a5')}
-                    ${statRow('💎', 'Sponsors', stats.sponsor_count, '#caffbf')}
-                    ${statRow('🌍', 'Public Applicants', stats.public_count, '#bdb2ff')}
-                    ${statRow('👑', 'VIP / VVIP', stats.vip_count, '#ffadad')}
-                </div>
-                <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 5px;">
-                        <span style="color: #4caf91;">✓ Approved: ${stats.approved_count}</span>
-                        <span style="color: #c29958;">⏳ Pending: ${stats.pending_count}</span>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.08); border-radius: 20px; height: 5px; overflow: hidden;">
-                        <div style="width: ${approvedPct}%; height: 100%; background: linear-gradient(90deg, #4caf91, #c29958); border-radius: 20px; transition: width 0.5s ease;"></div>
-                    </div>
-                </div>
-            ` : `
-                <div style="color: #555; font-size: 0.8rem; font-style: italic; margin-top: 8px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05);">
-                    No registrations from this country yet.
-                </div>
-            `}
-        </div>`;
-
-    tooltip.style.opacity = '1';
-    tooltip.style.left = (x + 15) + 'px';
-    tooltip.style.top = (y + 15) + 'px';
-};
-
-// Fetch stats for one country (with cache)
-const fetchCountryStats = async (countryName, x, y) => {
-    const key = countryName.toLowerCase().trim();
-    if (cache[key] !== undefined) {
-        renderTooltip(countryName, cache[key], x, y);
-        return;
-    }
-
-    try {
-        const res = await fetch(`/api/stats/countries?country=${encodeURIComponent(countryName)}`);
-        if (res.ok) {
-            const data = await res.json();
-            cache[key] = data;
-            if (currentCountry === countryName) {
-                renderTooltip(countryName, data, x, y);
-            }
-        }
-    } catch (err) {
-        console.warn(`Failed to fetch stats for ${countryName}:`, err);
-        cache[key] = { total: 0, influencer_count: 0, media_count: 0, speaker_count: 0, partner_count: 0, sponsor_count: 0, public_count: 0, vip_count: 0, approved_count: 0, pending_count: 0 };
-        if (currentCountry === countryName) {
-            renderTooltip(countryName, cache[key], x, y);
-        }
-    }
-};
-
-
 // Dynamic Impact Stats Fetch
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const BACKEND_URL = 'https://web1-6b9i.onrender.com';
-        const response = await fetch(`${BACKEND_URL}/api/stats/summary`);
+        const response = await fetch('/api/stats/summary');
         if (response.ok) {
             const data = await response.json();
             const statItems = document.querySelectorAll('.stat-number');
@@ -441,23 +395,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     justify-content: center;
                 ">
                     ${profilePhoto ? `
-                        <img src="${profilePhoto.startsWith('/') ? 'https://web1-6b9i.onrender.com' + profilePhoto : profilePhoto}" 
+                        <img src="${profilePhoto}" 
                              alt="${speaker.full_name}" 
-                             onerror="this.style.setProperty('display', 'none', 'important'); this.nextElementSibling.style.setProperty('display', 'flex', 'important');"
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
-                        <div class="speaker-initial-circle" style="
-                            display: none !important;
-                            width: 120px; 
-                            height: 120px; 
-                            background: linear-gradient(135deg, var(--primary), #8a6b3a);
-                            color: #000;
-                            border-radius: 50%;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 3.5rem;
-                            font-weight: 900;
-                            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-                        ">${initials}</div>
                     ` : `
                         <div class="speaker-initial-circle" style="
                             width: 120px; 
